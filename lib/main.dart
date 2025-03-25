@@ -1,20 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:busmap/providers/favorite_provider.dart';
+import 'package:busmap/providers/user_admin_chat_provider.dart'; // Thêm import ChatProvider
+import 'package:busmap/screens/Home/home_screen.dart';
+import 'package:busmap/screens/Notification/notification_screen.dart';
+import 'package:busmap/screens/Favorite/favorite_screen.dart';
+import 'dart:io';
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+  }
+}
 
 void main() {
-  runApp(BusMapApp());
+  HttpOverrides.global = MyHttpOverrides();
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => FavoriteProvider()),
+        ChangeNotifierProvider(create: (_) => ChatProvider()), // Thêm ChatProvider
+      ],
+      child: const BusMapApp(),
+    ),
+  );
 }
 
 class BusMapApp extends StatelessWidget {
+  const BusMapApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
+      title: 'Bus Map', // Thêm title
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      debugShowCheckedModeBanner: true, // Để true trong môi trường phát triển
+      home: const HomeScreen(),
     );
   }
 }
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -22,9 +55,16 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
+  final List<Widget> _screens = [
+    const HomeContent(),
+     NotificationScreen(),
+    const Center(child: Text('Quét mã')),
+    const FavoriteScreen(),
+    const Center(child: Text('Tài khoản')),
+  ];
+
   void _onItemTapped(int index) {
-    setState(()  // cập nhật ui khi click bottomNavigationBar
-    {
+    setState(() {
       _selectedIndex = index;
     });
   }
@@ -32,92 +72,21 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green,
-        elevation: 0,
-        leading: Icon(Icons.directions_bus),
-        title: Row(
-          children: [
-            Text('Bus Map'),
-          ],
-        ),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Tìm kiếm địa điểm',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                filled: true,
-                fillColor: Colors.white,
-              ),
-            ),
-          ),
-          Container(
-            height: 150,
-            margin: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-             // image: DecorationImage(
-             //   image: AssetImage('img/bus.png'),
-             //   fit: BoxFit.cover,
-            //  ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          Expanded(
-            child: GridView.count(
-              crossAxisCount: 4,
-              children: [
-                _buildFeatureItem(Icons.directions_bus, 'Tra cứu'),
-                _buildFeatureItem(Icons.route, 'Tìm đường'),
-                _buildFeatureItem(Icons.location_on, 'Trạm xung quanh'),
-                _buildFeatureItem(Icons.feedback, 'Góp ý'),
-                _buildFeatureItem(Icons.school, 'Student Hub'),
-                _buildFeatureItem(Icons.business, 'Buýt Doanh nghiệp'),
-                _buildFeatureItem(Icons.directions_car, 'Tìm kiếm xe'),
-                _buildFeatureItem(Icons.chat, 'Chat Nhóm'),
-              ],
-            ),
-          ),
-        ],
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _screens,
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        unselectedItemColor: Colors.grey,  // Màu khi chưa chọn
-        selectedItemColor: Colors.green,   // màu đã chọn
-        items: [
+        unselectedItemColor: Colors.grey,
+        selectedItemColor: Colors.green,
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang chủ'),
           BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Thông báo'),
           BottomNavigationBarItem(icon: Icon(Icons.qr_code), label: 'Quét mã'),
           BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Yêu thích'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Tài khoản'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFeatureItem(IconData icon, String title) {
-    return InkWell(
-      onTap: () {
-        print("$title được nhấn"); // Check onclick
-      },
-      splashColor: Colors.green.withOpacity(0.2),
-      borderRadius: BorderRadius.circular(12), // Bo icon
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            backgroundColor: Colors.green.withOpacity(0.2),
-            child: Icon(icon, color: Colors.green),
-          ),
-          SizedBox(height: 5),
-          Text(title, textAlign: TextAlign.center),
         ],
       ),
     );
