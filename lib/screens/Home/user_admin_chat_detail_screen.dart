@@ -21,7 +21,7 @@ class _UserAdminChatDetailScreenState extends State<UserAdminChatDetailScreen> {
   @override
   void initState() {
     super.initState();
-    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    final chatProvider = Provider.of<UserAdminChatProvider>(context, listen: false);
     chatProvider.fetchMessagesByChatId(widget.chatId);
     chatProvider.markMessageAsRead(widget.chatId, _senderRole);
   }
@@ -33,7 +33,7 @@ class _UserAdminChatDetailScreenState extends State<UserAdminChatDetailScreen> {
       _isSending = true;
     });
     try {
-      await Provider.of<ChatProvider>(context, listen: false).sendMessage(
+      await Provider.of<UserAdminChatProvider>(context, listen: false).sendMessage(
         widget.chatId,
         _senderRole,
         _messageController.text.trim(),
@@ -63,7 +63,7 @@ class _UserAdminChatDetailScreenState extends State<UserAdminChatDetailScreen> {
       body: Column(
         children: [
           Expanded(
-            child: Consumer<ChatProvider>(
+            child: Consumer<UserAdminChatProvider>(
               builder: (context, chatProvider, child) {
                 if (chatProvider.isLoadingMessages) {
                   return const Center(child: CircularProgressIndicator());

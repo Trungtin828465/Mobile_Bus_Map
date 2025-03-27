@@ -3,7 +3,7 @@ import 'package:busmap/models/UserAdminChat/user_admin_chat.dart';
 import 'package:busmap/models/UserAdminChat/user_admin_message.dart';
 import 'package:busmap/services/user_admin_chat_service.dart';
 
-class ChatProvider with ChangeNotifier {
+class UserAdminChatProvider with ChangeNotifier { // Đổi tên từ ChatProvider thành UserAdminChatProvider
   final UserAdminChatService _chatService = UserAdminChatService();
   List<UserAdminChat> _chats = [];
   List<UserAdminMessage> _messages = [];

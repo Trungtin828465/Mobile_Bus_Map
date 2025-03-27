@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:busmap/screens/Home/vehicle_search_screen.dart'; // Giả sử bạn đã có file này
 import 'package:busmap/screens/Home/list_chat_screen.dart'; // Import ListChatScreen
 import 'package:busmap/screens/Home/bus_route_screen.dart'; // Import BusRouteScreen
-import 'package:busmap/screens/Home/user_admin_chat_list_screen.dart'; // Import BusRouteScreen
+import 'package:busmap/screens/Home/user_admin_chat_list_screen.dart'; // Import UserAdminChatListScreen
+import 'package:busmap/screens/Home/weather_forecast_screen.dart'; // Import WeatherForecastScreen
 
 class HomeContent extends StatefulWidget {
   const HomeContent({super.key});
@@ -48,9 +49,8 @@ class _HomeContentState extends State<HomeContent> {
                 _buildFeatureItem(Icons.directions_bus, 'Tra cứu', isBusRoute: true),
                 _buildFeatureItem(Icons.route, 'Tìm đường'),
                 _buildFeatureItem(Icons.location_on, 'Trạm xung quanh'),
-                // _buildFeatureItem(Icons.feedback, 'Góp ý'),
                 _buildFeatureItem(Icons.feedback, 'Admin Chat', isAdminChat: true),
-                _buildFeatureItem(Icons.school, 'Student Hub'),
+                _buildFeatureItem(Icons.school, 'Weather', isWeather: true), // Thêm isWeather
                 _buildFeatureItem(Icons.business, 'Buýt Doanh nghiệp'),
                 _buildFeatureItem(Icons.directions_car, 'Tìm kiếm xe', isVehicleSearch: true),
                 _buildFeatureItem(Icons.chat, 'ChatBot', isChat: true),
@@ -63,7 +63,11 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   Widget _buildFeatureItem(IconData icon, String title,
-      {bool isVehicleSearch = false, bool isChat = false, bool isBusRoute = false, bool isAdminChat = false}) {
+      {bool isVehicleSearch = false,
+        bool isChat = false,
+        bool isBusRoute = false,
+        bool isAdminChat = false,
+        bool isWeather = false}) { // Thêm tham số isWeather
     return InkWell(
       onTap: () {
         print("$title được nhấn");
@@ -86,6 +90,11 @@ class _HomeContentState extends State<HomeContent> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => UserAdminChatListScreen()),
+          );
+        } else if (isWeather) { // Thêm điều hướng cho Weather
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const WeatherForecastScreen()),
           );
         }
       },

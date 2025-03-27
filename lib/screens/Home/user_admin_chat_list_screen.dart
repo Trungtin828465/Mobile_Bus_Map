@@ -17,11 +17,11 @@ class _UserAdminChatListScreenState extends State<UserAdminChatListScreen> {
   @override
   void initState() {
     super.initState();
-    Provider.of<ChatProvider>(context, listen: false).fetchChatsByUserId(_userId);
+    Provider.of<UserAdminChatProvider>(context, listen: false).fetchChatsByUserId(_userId);
   }
 
   Future<void> _createNewChat() async {
-    await Provider.of<ChatProvider>(context, listen: false).createChat(_userId, _adminId);
+    await Provider.of<UserAdminChatProvider>(context, listen: false).createChat(_userId, _adminId);
   }
 
   Future<void> _deleteChat(String chatId) async {
@@ -44,7 +44,7 @@ class _UserAdminChatListScreenState extends State<UserAdminChatListScreen> {
     );
 
     if (confirm == true) {
-      await Provider.of<ChatProvider>(context, listen: false).deleteChat(chatId);
+      await Provider.of<UserAdminChatProvider>(context, listen: false).deleteChat(chatId);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Đã xóa cuộc trò chuyện')),
       );
@@ -59,7 +59,7 @@ class _UserAdminChatListScreenState extends State<UserAdminChatListScreen> {
         backgroundColor: Colors.green,
         elevation: 0,
       ),
-      body: Consumer<ChatProvider>(
+      body: Consumer<UserAdminChatProvider>(
         builder: (context, chatProvider, child) {
           if (chatProvider.isLoadingChats) {
             return const Center(child: CircularProgressIndicator());
