@@ -110,3 +110,34 @@ class Wind {
     );
   }
 }
+
+class WeatherDescriptionTranslator {
+  static const Map<String, String> descriptionMap = {
+    'clear sky': 'Trời quang đãng',
+    'few clouds': 'Mây thưa',
+    'scattered clouds': 'Mây rải rác',
+    'broken clouds': 'Mây rách',
+    'overcast clouds': 'Mây u ám',
+    'light rain': 'Mưa nhẹ',
+    'moderate rain': 'Mưa vừa',
+    'heavy intensity rain': 'Mưa lớn',
+    'very heavy rain': 'Mưa rất lớn',
+    'extreme rain': 'Mưa cực lớn',
+    'light intensity shower rain': 'Mưa rào nhẹ',
+    'shower rain': 'Mưa rào',
+    'heavy intensity shower rain': 'Mưa rào lớn',
+    'thunderstorm': 'Giông bão',
+    'thunderstorm with light rain': 'Giông bão kèm mưa nhẹ',
+    'thunderstorm with rain': 'Giông bão kèm mưa',
+    'light snow': 'Tuyết nhẹ',
+    'snow': 'Tuyết',
+    'heavy snow': 'Tuyết lớn',
+    'mist': 'Sương mù',
+    'fog': 'Sương mù dày',
+    'haze': 'Sương mù nhẹ',
+  };
+
+  static String translateDescription(String description) {
+    return descriptionMap[description.toLowerCase()] ?? description;
+  }
+}

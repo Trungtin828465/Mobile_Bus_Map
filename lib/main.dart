@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:busmap/providers/favorite_provider.dart';
-import 'package:busmap/providers/user_admin_chat_provider.dart'; // Đổi tên ChatProvider thành UserAdminChatProvider
-import 'package:busmap/providers/weather_provider.dart'; // Thêm WeatherProvider
+import 'package:busmap/providers/user_admin_chat_provider.dart';
+import 'package:busmap/providers/weather_provider.dart';
 import 'package:busmap/screens/Home/home_screen.dart';
 import 'package:busmap/screens/Notification/notification_screen.dart';
 import 'package:busmap/screens/Favorite/favorite_screen.dart';
-import 'package:busmap/screens/Home/vehicle_search_screen.dart';
 import 'package:busmap/screens/Home/list_chat_screen.dart';
 import 'package:busmap/screens/Home/bus_route_screen.dart';
 import 'package:busmap/screens/Home/user_admin_chat_list_screen.dart';
-import 'package:busmap/screens/Home/weather_forecast_screen.dart'; // Thêm WeatherForecastScreen
+import 'package:busmap/screens/Home/weather_forecast_screen.dart';
 import 'dart:io';
 
 class MyHttpOverrides extends HttpOverrides {
@@ -27,8 +26,8 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => FavoriteProvider()),
-        ChangeNotifierProvider(create: (_) => UserAdminChatProvider()), // Đổi tên ChatProvider
-        ChangeNotifierProvider(create: (_) => WeatherProvider()), // Thêm WeatherProvider
+        ChangeNotifierProvider(create: (_) => UserAdminChatProvider()),
+        ChangeNotifierProvider(create: (_) => WeatherProvider()),
       ],
       child: const BusMapApp(),
     ),
@@ -49,7 +48,6 @@ class BusMapApp extends StatelessWidget {
       debugShowCheckedModeBanner: true,
       home: const HomeScreen(),
       routes: {
-        '/vehicle_search': (context) => VehicleSearchScreen(),
         '/list_chat': (context) => ListChatScreen(),
         '/bus_route': (context) => const BusRouteScreen(),
         '/user_admin_chat_list': (context) => UserAdminChatListScreen(),

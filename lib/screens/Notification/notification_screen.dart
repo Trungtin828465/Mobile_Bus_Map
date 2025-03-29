@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../widgets/notification_item.dart';
+import 'package:busmap/widgets//notification_item.dart';
+import 'article_list_screen.dart';
 
 class NotificationScreen extends StatelessWidget {
   @override
@@ -8,22 +9,25 @@ class NotificationScreen extends StatelessWidget {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Tin tức và thông báo', style: TextStyle(color: Colors.white)),
+          title: const Text(
+            'Tin tức và thông báo',
+            style: TextStyle(color: Colors.white),
+          ),
           backgroundColor: Colors.green,
           elevation: 0,
-          bottom: TabBar(
+          bottom: const TabBar(
             tabs: [
               Tab(text: 'Thông báo'),
               Tab(text: 'Tin tức'),
             ],
             indicatorColor: Colors.white,
             labelColor: Colors.white,
-            unselectedLabelColor: Colors.grey[300],
+            unselectedLabelColor: Colors.grey,
           ),
         ),
-        body: TabBarView(
+        body: const TabBarView(
           children: [
-            NotificationTab(),
+            ArticleListScreen(), // Thay NotificationTab bằng ArticleListScreen
             NewsTab(),
           ],
         ),
@@ -32,25 +36,19 @@ class NotificationScreen extends StatelessWidget {
   }
 }
 
-class NotificationTab extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: EdgeInsets.all(8.0),
-      children: [
-        NotificationItem(isRead: false, date: '02/02/24', title: 'Tết đến rồi, bạn vé chưa chùa?'),
-      ],
-    );
-  }
-}
-
 class NewsTab extends StatelessWidget {
+  const NewsTab({super.key});
+
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8.0),
       children: [
-        NotificationItem(isRead: false, date: '28/12/23', title: 'Bản của Giáp Thin đã đến rồi 🎉'),
+        NotificationItem(
+          isRead: false,
+          date: '28/12/23',
+          title: 'Bản của Giáp Thin đã đến rồi 🎉',
+        ),
       ],
     );
   }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:busmap/screens/Home/vehicle_search_screen.dart'; // Giả sử bạn đã có file này
 import 'package:busmap/screens/Home/list_chat_screen.dart'; // Import ListChatScreen
 import 'package:busmap/screens/Home/bus_route_screen.dart'; // Import BusRouteScreen
 import 'package:busmap/screens/Home/user_admin_chat_list_screen.dart'; // Import UserAdminChatListScreen
@@ -75,11 +74,6 @@ class _HomeContentState extends State<HomeContent> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const BusRouteScreen()),
-          );
-        } else if (isVehicleSearch) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => VehicleSearchScreen()),
           );
         } else if (isChat) {
           Navigator.push(

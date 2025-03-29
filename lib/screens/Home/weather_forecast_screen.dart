@@ -68,9 +68,8 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
           // Nhóm dữ liệu theo ngày sử dụng dt
           Map<String, List<ForecastItem>> groupedForecasts = {};
           for (var item in forecastItems) {
-            // Chuyển timestamp Unix (dt) thành DateTime
             final dateTime = DateTime.fromMillisecondsSinceEpoch(item.dt * 1000);
-            final date = DateFormat('yyyy-MM-dd').format(dateTime); // Lấy ngày (YYYY-MM-DD)
+            final date = DateFormat('yyyy-MM-dd').format(dateTime);
             if (!groupedForecasts.containsKey(date)) {
               groupedForecasts[date] = [];
             }
@@ -83,7 +82,7 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Thời tiết hiện tại (lấy từ mục đầu tiên)
+                  // Thời tiết hiện tại
                   Text(
                     'Thời tiết hiện tại tại ${weather.city.name}',
                     style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -111,7 +110,7 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
                                   style: const TextStyle(fontSize: 18),
                                 ),
                                 Text(
-                                  'Mô tả: ${forecastItems[0].weather[0].description}',
+                                  'Mô tả: ${WeatherDescriptionTranslator.translateDescription(forecastItems[0].weather[0].description)}',
                                   style: const TextStyle(fontSize: 16),
                                 ),
                                 Text(
@@ -149,20 +148,19 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
                       final date = entry.key;
                       final items = entry.value;
 
-                      // Tính toán nhiệt độ trung bình, min, max
                       final temps = items
                           .map((item) => item.main.temp)
                           .where((temp) => temp != null)
                           .cast<num>()
                           .toList();
                       final minTemps = items
-                          .map((item) => item.main.tempMin)
-                          .where((temp) => temp != null)
+                          .map((item) => item.main.tempMin != 0 ? item.main.tempMin : item.main.temp)
+                          .where((temp) => temp != null && temp != 0)
                           .cast<num>()
                           .toList();
                       final maxTemps = items
-                          .map((item) => item.main.tempMax)
-                          .where((temp) => temp != null)
+                          .map((item) => item.main.tempMax != 0 ? item.main.tempMax : item.main.temp)
+                          .where((temp) => temp != null && temp != 0)
                           .cast<num>()
                           .toList();
 
@@ -176,9 +174,8 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
                       final maxTemp = maxTemps.isNotEmpty
                           ? maxTemps.reduce((a, b) => a > b ? a : b)
                           : null;
-                      final description = items[0].weather[0].description;
+                      final description = WeatherDescriptionTranslator.translateDescription(items[0].weather[0].description);
 
-                      // Parse ngày tháng
                       String formattedDate;
                       try {
                         formattedDate = DateFormat('dd/MM/yyyy').format(DateTime.parse(date));
