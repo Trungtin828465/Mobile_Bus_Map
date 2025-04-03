@@ -50,51 +50,9 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Mapbox Directions API")),
-      body: Column(
+      body: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                TextField(
-                  controller: controller.startController,
-                  onChanged: controller.updateStartSuggestions,
-                  decoration: InputDecoration(labelText: "Địa chỉ bắt đầu"),
-                  onTap: () => setState(() => controller.isStartFieldFocused = true),
-                ),
-                TextField(
-                  controller: controller.endController,
-                  onChanged: controller.updateEndSuggestions,
-                  decoration: InputDecoration(labelText: "Địa chỉ kết thúc"),
-                  onTap: () => setState(() => controller.isEndFieldFocused = true),
-                ),
-                ElevatedButton(
-                  onPressed: controller.fetchRoute,
-                  child: Text("Tìm đường"),
-                ),
-                if (controller.isStartFieldFocused && controller.startSuggestions.isNotEmpty)
-                  SuggestionList(
-                    suggestions: controller.startSuggestions,
-                    controller: controller.startController,
-                    onSelected: () {
-                      setState(() => controller.isStartFieldFocused = false);
-                      controller.onTextChanged();
-                    },
-                  ),
-                if (controller.isEndFieldFocused && controller.endSuggestions.isNotEmpty)
-                  SuggestionList(
-                    suggestions: controller.endSuggestions,
-                    controller: controller.endController,
-                    onSelected: () {
-                      setState(() => controller.isEndFieldFocused = false);
-                      controller.onTextChanged();
-                    },
-                  ),
-              ],
-            ),
-          ),
-          Expanded(
+          Positioned.fill(
             child: controller.tileUrl.isEmpty
                 ? Center(child: CircularProgressIndicator())
                 : FlutterMap(
@@ -139,6 +97,91 @@ class _MapScreenState extends State<MapScreen> {
                         child: Icon(Icons.flag, color: Colors.red, size: 40),
                       ),
                     ],
+                  ),
+              ],
+            ),
+          ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+
+            child: Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(height: 50),
+                      TextField(
+                        controller: controller.startController,
+                        onChanged: controller.updateStartSuggestions,
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.place, color: Colors.red),
+                          hintText: "Nhập địa điểm đi",
+                          filled: true,
+                          fillColor: Colors.green.shade700,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                          hintStyle: TextStyle(color: Colors.white),
+                        ),
+                        onTap: () => setState(() => controller.isStartFieldFocused = true),
+                      ),
+                      SizedBox(height: 10),
+                      TextField(
+                        controller: controller.endController,
+                        onChanged: controller.updateEndSuggestions,
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.place, color: Colors.black),
+                          hintText: "Nhập địa điểm đến",
+                          filled: true,
+                          fillColor: Colors.green.shade700,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                          hintStyle: TextStyle(color: Colors.white),
+                        ),
+                        onTap: () => setState(() => controller.isEndFieldFocused = true),
+                      ),
+                      SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: controller.fetchRoute,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          minimumSize: Size(double.infinity, 40),
+                        ),
+                        child: Text("Tìm Đường", style: TextStyle(color: Colors.green, fontSize: 17)),
+                      ),
+                    ],
+                  ),
+                ),
+                if (controller.isStartFieldFocused && controller.startSuggestions.isNotEmpty)
+                  SuggestionList(
+                    suggestions: controller.startSuggestions,
+                    controller: controller.startController,
+                    onSelected: () {
+                      setState(() => controller.isStartFieldFocused = false);
+                      controller.onTextChanged();
+                    },
+                  ),
+                if (controller.isEndFieldFocused && controller.endSuggestions.isNotEmpty)
+                  SuggestionList(
+                    suggestions: controller.endSuggestions,
+                    controller: controller.endController,
+                    onSelected: () {
+                      setState(() => controller.isEndFieldFocused = false);
+                      controller.onTextChanged();
+                    },
                   ),
               ],
             ),
