@@ -14,7 +14,12 @@ class SuggestionList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 150,
+      height: 200,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(5),
+      ),
       child: ListView.builder(
         itemCount: suggestions.length,
         itemBuilder: (context, index) {

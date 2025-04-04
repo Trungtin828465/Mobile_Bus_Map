@@ -3,7 +3,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../controllers/map_controller.dart';
 import 'widgets/suggestion_list.dart';
-
 class MapScreen extends StatefulWidget {
   @override
   _MapScreenState createState() => _MapScreenState();
@@ -152,7 +151,7 @@ class _MapScreenState extends State<MapScreen> {
                       ),
                       SizedBox(height: 10),
                       ElevatedButton(
-                        onPressed: controller.fetchRoute,
+                        onPressed: () => controller.onTriplist(context),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
@@ -161,7 +160,8 @@ class _MapScreenState extends State<MapScreen> {
                           minimumSize: Size(double.infinity, 40),
                         ),
                         child: Text("Tìm Đường", style: TextStyle(color: Colors.green, fontSize: 17)),
-                      ),
+                      )
+
                     ],
                   ),
                 ),

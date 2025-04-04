@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../services/map_service.dart';
-
+import 'package:utilitybus/routes/route_app.dart';
+import 'package:utilitybus/controllers/busroute_trip_controller.dart';
 class MapControllerLogic {
   String tileUrl = "";
   TextEditingController startController = TextEditingController();
@@ -18,6 +19,7 @@ class MapControllerLogic {
   bool isStartFieldFocused = false;
   bool isEndFieldFocused = false;
 
+  final BusRouteController _controller = BusRouteController();
   //Tao callback functions
   final Function(List<String>) onStartSuggestionsUpdated;
   final Function(List<String>) onEndSuggestionsUpdated;
@@ -66,6 +68,29 @@ class MapControllerLogic {
       fetchRoute();
     }
   }
+
+  Future<void> onTriplist(BuildContext context) async {
+    if (startController.text.isNotEmpty && endController.text.isNotEmpty) {
+      final routeData = await MapService.fetchRoute(startController.text, endController.text);
+
+      if (routeData != null) {
+        // Chờ 1 chút để API fetch xong
+        await Future.delayed(Duration(milliseconds: 500));
+
+        // Điều hướng đến danh sách tuyến
+        FluroRouterConfig.navigateToPage(
+          context,
+          "/triplist?start=${Uri.encodeComponent(startController.text)}&end=${Uri.encodeComponent(endController.text)}",
+        );
+      } else {
+        // showSnackBar(context, "Vui lòng nhập đúng địa chỉ.");
+      }
+    } else {
+      // showSnackBar(context, "Vui lòng nhập địa chỉ bắt đầu và điểm đến.");
+    }
+  }
+
+
 
   void dispose() {
     _debounce?.cancel();
