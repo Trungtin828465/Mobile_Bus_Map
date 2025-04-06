@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'views/trip_screen.dart';
+import 'package:utilitybus/views/map_screen.dart';
+
 import 'package:utilitybus/routes/route_app.dart';
 
 class MyApp extends StatelessWidget {
@@ -8,7 +9,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       onGenerateRoute: FluroRouterConfig.router.generator,
-      home: BusRouteFinderView(),
+      home: MapScreen(),
     );
   }
 }

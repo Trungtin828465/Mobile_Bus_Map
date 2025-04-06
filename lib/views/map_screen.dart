@@ -49,6 +49,15 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.green,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+           // FluroRouterConfig.navigateToPage(context, "/mapsreecs", slideFromRight: false);// Trượt từ trái sang phải
+          },
+        ),
+      ),
       body: Stack(
         children: [
           Positioned.fill(
@@ -101,21 +110,20 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ),
           Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-
             child: Column(
               children: [
                 Container(
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
+                  padding: const EdgeInsets.all(16),
+                  decoration: const BoxDecoration(
                     color: Colors.green,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20),
+                    ),
                   ),
                   child: Column(
                     children: [
-                      SizedBox(height: 50),
+
                       TextField(
                         controller: controller.startController,
                         onChanged: controller.updateStartSuggestions,

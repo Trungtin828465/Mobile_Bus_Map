@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 class BusRouteMapPage extends StatelessWidget {
-  final List<dynamic> routeStops;
+  final Map<String, dynamic> routeData;
 
-  BusRouteMapPage({required this.routeStops});
+  const BusRouteMapPage({Key? key, required this.routeData}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Bus Route Map")),
+      appBar: AppBar(title: const Text("Bus Route Map")),
       body: Center(
-        child: Text("Map with stops: ${routeStops.toString()}"),
+        child: Text("Map for route: ${routeData["Title"]}"),
       ),
     );
   }

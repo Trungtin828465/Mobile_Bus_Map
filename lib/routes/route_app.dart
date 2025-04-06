@@ -1,7 +1,7 @@
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:utilitybus/views/map_screen.dart';
-import 'package:utilitybus/views/trip_screen.dart';
+import 'package:utilitybus/views/BusRouteFinder.dart';
 
 class FluroRouterConfig {
   static final FluroRouter router = FluroRouter();
@@ -14,12 +14,12 @@ class FluroRouterConfig {
     );
 
     router.define(
-      "/triplist",
+      "/listbus",
       handler: Handler(handlerFunc: (context, params) {
         final start = params['start']?.first ?? "";
         final end = params['end']?.first ?? "";
 
-        return BusRouteFinderView(
+        return BusRouteFinder(
           initialFrom: start,
           initialTo: end,
         );
@@ -60,3 +60,6 @@ class FluroRouterConfig {
     );
   }
 }
+
+
+
