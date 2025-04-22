@@ -65,6 +65,32 @@ class _BusRouteFinderState extends State<BusRouteFinder> {
     super.dispose();
   }
 
+
+// Lưu thông tin
+  Future<void> saveTravelInfo(TravelInfo travelInfo) async {
+    // Replace '8080' with the actual port your backend server is running on
+    final url = Uri.parse('http://10.0.2.2:5204/api/TravelInfo'); // For Android emulator
+    // If testing on a real device, use your computer's IP, e.g., 'http://192.168.1.x:8080/api/TravelInfo'
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(travelInfo.toJson()),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('Lưu thành công!');
+      } else {
+        print('Lỗi: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        throw Exception('Failed to save TravelInfo: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error saving TravelInfo: $e');
+      throw Exception('Error saving TravelInfo: $e');
+    }
+  }
   Future<Map<String, double>?> getCoordinatesFromAddress(String address) async {
     const String apiKey = "pk.eyJ1IjoiZGF0MTUxMCIsImEiOiJjbTc4d3Rma3cwMTJyMnFvbGE4aGNsam5kIn0.2dAqovqd9va216DchFb4QQ"; // Thay bằng API Key của bạn
     final url = Uri.parse(
@@ -226,6 +252,7 @@ class _BusRouteFinderState extends State<BusRouteFinder> {
             ElevatedButton(
               onPressed: fetchBusRoutes,
               child: const Text("Find Bus Routes"),
+
             ),
             const SizedBox(height: 10),
             if (isFetchingRoutes) const CircularProgressIndicator(),
@@ -237,13 +264,44 @@ class _BusRouteFinderState extends State<BusRouteFinder> {
                   return ListTile(
                     title: Text(route["Title"] ?? "Không có tiêu đề"),
                     subtitle: Text(route["Desc"] ?? "Không có mô tả"),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BusRouteMapPage(routeData: route),
-                        ),
-                      );
+                    onTap: () async {
+                      try {
+                        if (_fromController.text.isEmpty || _toController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Please enter both from and to locations')),
+                          );
+                          return;
+                        }
+
+                        final info = TravelInfo(
+                          fromLocation: _fromController.text,
+                          toLocation: _toController.text,
+                          travelDateTime: DateTime.now(),
+                          userId: 1,
+                        );
+
+                        await saveTravelInfo(info);
+
+                        if (context.mounted) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BusRouteMapPage(
+                                routeData: busRoutes[index],
+                                  fromLocation: _fromController.text,
+                                  toLocation: _toController.text,
+                              ),
+                            ),
+                          );
+
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error: $e')),
+                          );
+                        }
+                      }
                     },
                   );
                 },
@@ -275,5 +333,29 @@ class _BusRouteFinderState extends State<BusRouteFinder> {
         },
       ),
     );
+  }
+}
+
+class TravelInfo {
+  final String fromLocation;
+  final String toLocation;
+  final DateTime travelDateTime;
+  final int userId;
+
+  TravelInfo({
+    required this.fromLocation,
+    required this.toLocation,
+    required this.travelDateTime,
+    required this.userId,
+  });
+
+  // Add toJson method to serialize the object to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'fromLocation': fromLocation,
+      'toLocation': toLocation,
+      'travelDateTime': travelDateTime.toIso8601String(),
+      'userId': userId,
+    };
   }
 }
