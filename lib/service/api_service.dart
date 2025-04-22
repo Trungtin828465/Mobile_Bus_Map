@@ -7,7 +7,6 @@ import 'package:busmap/models/BusStopModel/BusStopModel.dart';
 class ApiService {
   final String baseUrl =
       "https://10.0.2.2:7222/api/busstops"; // Đổi cổng đúng với API
-
   Future<List<BusStopModel>> fetchBusStops() async {
     try {
       final response = await http.get(Uri.parse('$baseUrl/TinBusStop'));
@@ -17,9 +16,12 @@ class ApiService {
       print("📦 Response Body API: ${response.body}");
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
+        // Giải mã phản hồi dưới dạng List<dynamic>
+        final List<dynamic> decoded = json.decode(response.body);
+
+        // Ánh xạ danh sách thành các đối tượng BusStopModel
         List<BusStopModel> busStops =
-            data.map((json) => BusStopModel.fromJson(json)).toList();
+        decoded.map((json) => BusStopModel.fromJson(json)).toList();
         print("✅ Số lượng điểm dừng nhận được: ${busStops.length}");
         return busStops;
       } else {
@@ -27,8 +29,8 @@ class ApiService {
         throw Exception("Lỗi từ API: ${response.body}");
       }
     } catch (e) {
-      print("❌ Lỗi không xác định: $e");
-      throw Exception(e.toString());
+      print("❌ Lỗi không xác định bus stop: $e");
+      throw Exception("Lỗi tải điểm dừng: $e");
     }
   }
 

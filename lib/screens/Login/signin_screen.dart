@@ -8,7 +8,6 @@ import 'package:busmap/widgets/SuccessDialog.dart';
 import 'package:busmap/service/api_service.dart';
 import 'package:busmap/Router.dart';
 import 'package:fluro/fluro.dart';
-import 'package:busmap/screens/HomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:busmap/service/LoginService.dart';
 import 'package:busmap/screens/Login/forget_passsword_screen.dart';
@@ -162,49 +161,53 @@ class _SignInScreenState extends State<SignInScreen> {
                         child: ElevatedButton(
                           onPressed: () async {
                             if (_formSignInKey.currentState!.validate() && rememberPassword) {
+                              LoginModel user = LoginModel(
+                                email: emailController.text.trim(),
+                                password: passWordController.text.trim(),
+                              );
 
-                                LoginModel user = LoginModel(
-                                  email: emailController.text.trim(),
-                                  password: passWordController.text.trim(),
-                                );
-                                try {
-                                // Thử đăng nhập admin trước
+                              try {
+                                // 1. Thử đăng nhập admin trước
                                 String loginAdminResult = await ApiServiceLogin().loginAdmin(user);
 
-                                // Nếu loginAdmin thành công, điều hướng đến /admin
+                                // 2. Nếu thành công → vào admin
                                 FluroRouterConfig.router.navigateTo(
                                   context,
                                   "/admin",
                                   transition: TransitionType.fadeIn,
                                 );
                               } catch (e) {
-                                // Nếu loginAdmin thất bại, tự động thử đăng nhập người dùng thường
+                                // 3. Nếu thất bại, thử đăng nhập user
                                 try {
                                   String responseMessage = await ApiServiceLogin().login(user);
 
-                                  // Hiển thị thông báo từ login (thành công hoặc lỗi)
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(responseMessage)),
+                                  // 4. Kiểm tra lại dữ liệu lưu trong SharedPreferences
+                                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                                  int? uid = prefs.getInt('user_id');
+                                  String? email = prefs.getString('user_email');
+
+                                  print("✅ Sau khi login, SharedPreferences chứa:");
+                                  print("user_id = $uid");
+                                  print("user_email = $email");
+
+                                  // 5. Điều hướng sau khi đã chắc chắn lưu xong
+                                  FluroRouterConfig.router.navigateTo(
+                                    context,
+                                    "/homeMaster",
+                                    transition: TransitionType.fadeIn,
                                   );
+
+                                  // 6. Hiện dialog thành công
                                   showDialog(
                                     context: context,
                                     builder: (context) => SuccessDialog(message: responseMessage),
                                   );
-
-                                  // Điều hướng đến /home nếu login thành công
-                                  FluroRouterConfig.router.navigateTo(
-                                    context,
-                                    "/home",
-                                    transition: TransitionType.fadeIn,
-                                  );
                                 } catch (e) {
-                                  // Hiển thị lỗi từ login
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(content: Text(e.toString())),
                                   );
                                 }
                               }
-
                             }else if (!rememberPassword) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(

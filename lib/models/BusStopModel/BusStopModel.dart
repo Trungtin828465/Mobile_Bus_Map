@@ -3,7 +3,7 @@ class BusStopModel {
   final String name;
   final double latitude;
   final double longitude;
-  final String address;
+  final String? address;
 
   BusStopModel({
     required this.id,
@@ -15,11 +15,11 @@ class BusStopModel {
 
   factory BusStopModel.fromJson(Map<String, dynamic> json) {
     return BusStopModel(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      latitude: (json['latitude'] as num).toDouble(),
-      longitude: (json['longitude'] as num).toDouble(),
-      address: json['address'] as String,
+      id: json['Id'],
+      name: json['Name'],
+      latitude: json['Latitude'],
+      longitude: json['Longitude'],
+      address: json['Address'],
     );
   }
 }

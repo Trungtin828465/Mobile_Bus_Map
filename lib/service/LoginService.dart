@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 
 class ApiServiceLogin {
-  final String baseUrl ="https://10.0.2.2:7222/api/busstops"; // Đổi cổng đúng với API
+  final String baseUrl ="https://10.0.2.2:7222/api/accounts"; // Đổi cổng đúng với API
 
   // Đăng nhập cumsatomer
   Future<String> login(LoginModel loginModel) async {
@@ -27,15 +27,18 @@ class ApiServiceLogin {
       final data = json.decode(response.body);
 
       if (response.statusCode == 200) {
-        String userEmail =
-            data['account']['email'] ?? '';
+        String userEmail = data['account']['Email'] ?? '';
+        String userName = data['account']['FullName'] ?? '';
+        int userId = data['account']['Id'] ?? 0;
 
-        // Lưu email vào SharedPreferences
+        // Lưu thông tin vào SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('user_email', userEmail);
-
-        return "Đăng nhập thành công. Email: $userEmail";
-      } else {
+        await prefs.setInt('user_id', userId); // <-- Thêm dòng này
+        await prefs.setString('user_name', userName); // <-- Thêm dòng này
+        return "Đăng nhập thành công. Tài khoảng: $userName";
+      }
+      else {
         String errorMessage =
         data.containsKey('message')
             ? data['message']
@@ -69,8 +72,14 @@ class ApiServiceLogin {
       final data = json.decode(response.body);
 
       if (response.statusCode == 200) {
+
+        String fullName = data['accountAdmin']['FullName'] ?? 'khong co admin';
+        int adminId = data['accountAdmin']['Id'] as int? ?? 0;
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user_name', fullName);
+        await prefs.setInt('admin_id', adminId);
         String userEmail = data['accountAdmin']['email'] ?? '';
-        return "Đăng nhập thành công. Email: $userEmail";
+        return "Đăng nhập thành công. Email admin: $userEmail";
       } else {
         throw Exception('');
       }
@@ -120,22 +129,30 @@ class ApiServiceLogin {
       throw Exception(e.toString()); // lỗi api
     }
   }
-
-  // Gửi OTP
+// goi otp
   Future<String> sendOtp(String email) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/Send-OTP'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'Email': email}),
-      );
-      return "OTP đã gởi cho $email: ";
+      ).timeout(const Duration(seconds: 10), onTimeout: () {
+        throw Exception("Yêu cầu hết thời gian. Vui lòng thử lại.");
+      });
+
+      final responseBody = jsonDecode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200) {
+        return responseBody['message'] ?? "OTP đã được gửi đến $email";
+      } else {
+        throw Exception(responseBody['message'] ?? 'Lỗi không xác định từ server: ${response.statusCode}');
+      }
     } on SocketException {
       throw Exception("Không thể kết nối đến máy chủ. Vui lòng kiểm tra mạng.");
     } on FormatException {
       throw Exception("Dữ liệu phản hồi không đúng định dạng.");
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception("Lỗi $e");
     }
   }
 

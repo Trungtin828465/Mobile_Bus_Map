@@ -236,18 +236,56 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen>
     super.dispose();
   }
 
+  // Future<void> _sendOtp() async {
+  //   String email = _emailController.text.trim();
+  //   if (email.isNotEmpty) {
+  //     try {
+  //       String message = await _apiService.sendOtp(email);
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text(message)),
+  //       );
+  //       _tabController.animateTo(1);
+  //     } catch (e) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+  //       );
+  //     }
+  //   } else {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('Vui lòng nhập email')),
+  //     );
+  //   }
+  // }
   Future<void> _sendOtp() async {
     String email = _emailController.text.trim();
     if (email.isNotEmpty) {
       try {
+        // Hiển thị loading
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => const Center(child: CircularProgressIndicator()),
+        );
+
+        // Gọi API gửi OTP
         String message = await _apiService.sendOtp(email);
+
+        // Đóng loading
+        Navigator.of(context).pop();
+
+        // OTP gửi thành công, hiển thị thông báo và chuyển tab
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(message)),
         );
         _tabController.animateTo(1);
       } catch (e) {
+        // Đóng loading nếu có lỗi
+        Navigator.of(context).pop();
+
+        // Hiển thị lỗi và không chuyển tab
+        String errorMessage = e.toString().replaceFirst('Exception: ', '');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+          SnackBar(content: Text(errorMessage)),
         );
       }
     } else {

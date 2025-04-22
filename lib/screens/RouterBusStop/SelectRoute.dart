@@ -39,7 +39,7 @@ class _BusScreenState extends State<BusSelectRount> {
 
   Future<void> fetchAllBusRoutes() async {
     List<BusRouteDetail> routes = [];
-    for (int i = 1; i <= 9; i++) {
+    for (int i = 1; i <= 10; i++) {
       try {
         var routeDetail = await ApiService().fetchBusRouteDetail(i.toString());
         routes.add(routeDetail);

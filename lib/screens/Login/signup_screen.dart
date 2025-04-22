@@ -226,6 +226,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text(responseMessage)),
                                 );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (e) => const SignInScreen(),
+                                  ),
+                                );
                                 showDialog(
                                   context: context,
                                   builder:
@@ -235,15 +241,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 );
 
                                 // Chuyển hướng về trang đăng nhập sau khi đăng ký thành công
-                                onTap:
-                                () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (e) => const SignUpScreen(),
-                                    ),
-                                  );
-                                };
+
+
+
                               } catch (e) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text(e.toString())),
