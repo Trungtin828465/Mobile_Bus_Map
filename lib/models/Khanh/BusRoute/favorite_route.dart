@@ -13,19 +13,19 @@ class FavoriteRoute {
 
   factory FavoriteRoute.fromJson(Map<String, dynamic> json) {
     return FavoriteRoute(
-      id: json['id']?.toString() ?? '',
-      userId: json['userId'] ?? 0,
-      routeNo: json['routeNo']?.toString() ?? '',
-      routeName: json['routeName']?.toString() ?? '',
+      id: json['Id']?.toString() ?? '',
+      userId: json['UserId'] ?? 0,
+      routeNo: json['RouteNo']?.toString() ?? '',
+      routeName: json['RouteName']?.toString() ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'userId': userId,
-      'routeNo': routeNo,
-      'routeName': routeName,
+      'Id': id,
+      'UserId': userId,
+      'RouteNo': routeNo,
+      'RouteName': routeName,
     };
   }
 }

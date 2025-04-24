@@ -5,7 +5,7 @@ import 'package:busmap/service/BusRouterService.dart';
 import 'package:busmap/models/BusRouterModel/BusRouteDetail.dart';
 import 'package:busmap/screens/RouterBusStop/DetailBus.dart';
 import 'package:fluro/fluro.dart';
-
+import 'package:busmap/service/Khanh/favorite_route_service.dart';
 
 void main() {
   runApp(SelectRount());
@@ -39,7 +39,7 @@ class _BusScreenState extends State<BusSelectRount> {
 
   Future<void> fetchAllBusRoutes() async {
     List<BusRouteDetail> routes = [];
-    for (int i = 1; i <= 10; i++) {
+    for (int i = 1; i <= 100; i++) {
       try {
         var routeDetail = await ApiService().fetchBusRouteDetail(i.toString());
         routes.add(routeDetail);
@@ -59,13 +59,6 @@ class _BusScreenState extends State<BusSelectRount> {
     Match? match = regex.firstMatch(tickets);
     return match != null ? match.group(1)! + " VNĐ" : "Không có giá";
   }
-
-
-
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -137,8 +130,104 @@ class _BusScreenState extends State<BusSelectRount> {
 
           SizedBox(height: 10),
 
-          // Danh sách tuyến xe
+
           Expanded(
+            child: ListView.builder(
+              itemCount: filteredRoutes.length,
+              itemBuilder: (context, index) {
+                var route = filteredRoutes[index];
+                return Card(
+                  margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  child: ListTile(
+                    leading: Icon(
+                      route.routeId == "metro" ? Icons.directions_subway : Icons.directions_bus,
+                      color: route.routeId == "metro" ? Colors.red : Colors.blue,
+                    ),
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Tuyến xe: ${route.routeId}',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        Text(
+                          route.routeName,
+                          style: TextStyle(fontSize: 14, color: Colors.black87),
+                        ),
+                      ],
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.access_time, size: 16, color: Colors.grey),
+                            SizedBox(width: 5),
+                            Text(route.operationTime, style: TextStyle(color: Colors.grey)),
+                            SizedBox(width: 10),
+                            Icon(Icons.attach_money, size: 16, color: Colors.grey),
+                            SizedBox(width: 5),
+                            Text(extractPrice(route.tickets), style: TextStyle(color: Colors.grey)),
+                          ],
+                        ),
+                      ],
+                    ),
+                    trailing: IconButton(
+                      icon: Icon(Icons.favorite_border, color: Colors.red),
+                      onPressed: () async {
+                        try {
+                          final service = FavoriteRouteService();
+                          final userId = 1; // ⚠️ Thay bằng userId thực tế
+
+                          final addedRoute = await service.addFavoriteRoute(
+                            userId,
+                            route.routeId,
+                            route.routeName,
+                          );
+
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Đã thêm tuyến ${addedRoute.routeNo} vào yêu thích'),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Lỗi khi thêm tuyến yêu thích: $e'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        }
+                      },
+                    ),
+                    onTap: () {
+                      FluroRouterConfig.router.navigateTo(
+                        context,
+                        "/busDetail/${route.routeId}",
+                        transition: TransitionType.fadeIn,
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+
+        ],
+      ),
+    );
+  }
+}
+
+
+
+// Danh sách tuyến xe
+/* Expanded(
             child: ListView.builder(
               itemCount: filteredRoutes.length,
               itemBuilder: (context, index) {
@@ -191,9 +280,4 @@ class _BusScreenState extends State<BusSelectRount> {
                 );
               },
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+          ),*/

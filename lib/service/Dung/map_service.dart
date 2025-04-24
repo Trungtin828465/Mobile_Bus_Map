@@ -6,7 +6,7 @@ import 'package:busmap/models/Dung/route_model.dart';
 class MapService {
   //Lay ban do
   static Future<String> fetchTileUrl() async {
-    final response = await http.get(Uri.parse("http://10.0.2.2:5204/api/Mapbox/tile-layer"));
+    final response = await http.get(Uri.parse("https://10.0.2.2:7222/api/Mapbox/tile-layer"));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return data["tileUrl"];
@@ -20,12 +20,17 @@ class MapService {
   //suggest: goi y
   static Future<List<String>> fetchAddressSuggestions(String query) async {
     if (query.isEmpty) return [];
-    final url = Uri.parse("http://10.0.2.2:5204/api/Mapbox/autocomplete?query=$query");
+
+    final url = Uri.parse("https://10.0.2.2:7222/api/Mapbox/autocomplete?query=$query");
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      return (data as List).map((place) => place["name"].toString()).toList();
+
+      return (data as List)
+          .where((place) => place["Name"] != null)
+          .map((place) => place["Name"].toString())
+          .toList();
     } else {
       return [];
     }
@@ -34,7 +39,7 @@ class MapService {
   static Future<RouteModel?> fetchRoute(String start, String end) async {
     final startEncoded = Uri.encodeComponent(start);
     final endEncoded = Uri.encodeComponent(end);
-    final url = "http://10.0.2.2:5204/api/Mapbox/route?start=$startEncoded&end=$endEncoded&profile=driving";
+    final url = "https://10.0.2.2:7222/api/Mapbox/route?start=$startEncoded&end=$endEncoded&profile=driving";
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {

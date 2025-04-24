@@ -22,39 +22,111 @@ class _ArticleListScreenState extends State<ArticleListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Danh sách bài viết'),
+        title: const Text('Bài viết mới'),
+        centerTitle: true,
       ),
       body: FutureBuilder<List<Article>>(
         future: futureArticles,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
+            final articles = snapshot.data!;
+            return ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: articles.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
-                final article = snapshot.data![index];
-                return ListTile(
-                  title: Text(article.tieuDe),
-                  subtitle: Text('Tác giả: ${article.tacGia}'),
+                final article = articles[index];
+
+                return InkWell(
+                  borderRadius: BorderRadius.circular(20),
                   onTap: () {
-                    print('Navigating to article with ID: ${article.idBaiViet}'); // In log ID
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ArticleDetailScreen(articleId: article.idBaiViet),
+                        builder: (_) => ArticleDetailScreen(
+                          articleId: article.idBaiViet,
+                        ),
                       ),
                     );
                   },
+                  child: Material(
+                    elevation: 3,
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Theme.of(context).colorScheme.surface,
+                      ),
+                      child: Row(
+                        children: [
+                          // Ảnh thumbnail – giả sử article.imageUrl có URL
+                          ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              bottomLeft: Radius.circular(20),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    article.tieuDe,
+                                    style: textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    'Tác giả: ${article.tacGia}',
+                                    style: textTheme.bodySmall,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    _formatDate(article.ngayDang),
+                                    style: textTheme.bodySmall?.copyWith(
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 );
               },
             );
           } else if (snapshot.hasError) {
-            return Center(child: Text('Lỗi: ${snapshot.error}'));
+            return Center(
+              child: Text(
+                'Lỗi: ${snapshot.error}',
+                style: const TextStyle(color: Colors.red),
+              ),
+            );
           }
           return const Center(child: CircularProgressIndicator());
         },
       ),
     );
   }
+
+  /// Chuyển DateTime → dd/MM/yyyy
+  String _formatDate(DateTime? date) {
+    if (date == null) return '';
+    return '${date.day.toString().padLeft(2, '0')}/'
+        '${date.month.toString().padLeft(2, '0')}/'
+        '${date.year}';
+  }
+
 }

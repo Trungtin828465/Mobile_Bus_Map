@@ -25,11 +25,11 @@ class DetailChatModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'role': role,
-      'content': content,
-      'createdAt': createdAt.toIso8601String(),
-      'chatId': chatId,
+      'Id': id,
+      'Role': role,
+      'Content': content,
+      'CreatedAt': createdAt.toIso8601String(),
+      'ChatId': chatId,
     };
   }
 }

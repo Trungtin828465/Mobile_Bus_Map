@@ -108,8 +108,8 @@ class _HomeContentState extends State<HomeContent> {
                 _buildFeatureItem(Icons.location_on, 'Trạm xung quanh',mapSearch:true),
                 _buildFeatureItem(Icons.feedback, 'Admin Chat', isAdminChat: true),
                 _buildFeatureItem(Icons.school, 'Weather', isWeather: true), // Thêm isWeather
-                _buildFeatureItem(Icons.business, 'Buýt Doanh nghiệp'),
-                _buildFeatureItem(Icons.directions_car, 'Tìm kiếm xe', isVehicleSearch: true),
+                // _buildFeatureItem(Icons.business, 'Buýt Doanh nghiệp'),
+               // _buildFeatureItem(Icons.directions_car, 'Tìm kiếm xe', isVehicleSearch: true),
                 _buildFeatureItem(Icons.chat, 'ChatBot', isChat: true),
               ],
             ),
@@ -120,7 +120,8 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   Widget _buildFeatureItem(IconData icon, String title,
-      {bool isVehicleSearch = false,
+      {
+        // bool isVehicleSearch = false,
         bool isChat = false,
         bool isBusRoute = false,
         bool isAdminChat = false,

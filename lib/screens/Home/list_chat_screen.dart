@@ -25,37 +25,6 @@ class _ListChatScreenState extends State<ListChatScreen> {
 
 
 
-  // Future<void> _loadChats() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //
-  //   int? id = prefs.getInt('user_id');
-  //   String? email = prefs.getString('user_email');
-  //
-  //   print('user_id lấy được trong HomeContent: $id');
-  //   print('user_email lấy được trong HomeContent: $email');
-  //
-  //   setState(() {
-  //     userId = id;
-  //     userEmail = email ?? 'Không có email';
-  //     _isLoading = true;
-  //   });
-  //
-  //
-  //   try {
-  //     final chats = await _chatApiService.getChatsByUserId(userId);
-  //     setState(() {
-  //       _chats = chats;
-  //       _isLoading = false;
-  //     });
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text("Error loading chats: $e")),
-  //     );
-  //     setState(() {
-  //       _isLoading = false;
-  //     });
-  //   }
-  // }
   Future<void> _loadChats() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -88,34 +57,15 @@ class _ListChatScreenState extends State<ListChatScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error loading chats: $e")),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text("Error loading chats: $e")),
+      // );
       setState(() {
         _isLoading = false;
       });
     }
   }
 
-  // Hàm tạo chat mới
-  // Future<void> _createNewChat() async {
-  //   try {
-  //     final newChat = await _chatApiService.createChat(userId, "New Chat");
-  //     setState(() {
-  //       _chats.add(newChat);
-  //     });
-  //     Navigator.push(
-  //       context,
-  //       MaterialPageRoute(
-  //         builder: (context) => ChatScreen(chatId: newChat.id),
-  //       ),
-  //     );
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text("Error creating chat: $e")),
-  //     );
-  //   }
-  // }
   Future<void> _createNewChat() async {
     print(' creat chat: $userId');
     if (userId == null) {

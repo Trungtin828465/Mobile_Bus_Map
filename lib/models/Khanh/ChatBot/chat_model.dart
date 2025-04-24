@@ -22,10 +22,10 @@ class ChatModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'userId': userId,
-      'title': title,
-      'createdAt': createdAt.toIso8601String(),
+      'Id': id,
+      'UserId': userId,
+      'Title': title,
+      'CreatedAt': createdAt.toIso8601String(),
     };
   }
 }

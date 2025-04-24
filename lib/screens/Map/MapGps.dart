@@ -1,4 +1,4 @@
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -6,8 +6,9 @@ import 'package:geolocator/geolocator.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter_compass/flutter_compass.dart';
-
-
+import 'package:busmap/service/Dung/map_service.dart';
+import 'package:busmap/controllers/map_controller.dart';
+import 'dart:convert';
 class MapGps extends StatefulWidget {
   @override
   _MapGpsState createState() => _MapGpsState();
@@ -21,6 +22,8 @@ class _MapGpsState extends State<MapGps> {
   double _heading = 0.0; // Hướng di chuyển
   StreamSubscription<Position>? _positionStream;
   StreamSubscription<CompassEvent>? _compassStream;
+ late MapControllerLogic controller;
+  String? _tileUrl;
 
   @override
   void initState() {
@@ -28,6 +31,26 @@ class _MapGpsState extends State<MapGps> {
     _checkAndRequestLocationPermission();
     _trackLocation();
     _trackCompass();
+    // Gọi sau khi widget được render xong
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchTileUrl();
+    });
+  }
+
+  Future<void> fetchTileUrl() async {
+    try {
+      final response = await http.get(Uri.parse("https://10.0.2.2:7222/api/Mapbox/tile-layer"));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          _tileUrl = data["tileUrl"];
+        });
+      } else {
+        print("Lỗi khi gọi API: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Lỗi khi fetch tileUrl: $e");
+    }
   }
 
   /// Kiểm tra và yêu cầu quyền vị trí
@@ -128,9 +151,11 @@ class _MapGpsState extends State<MapGps> {
             initialZoom: _currentZoom,
           ),
           children: [
-            TileLayer(
-              urlTemplate: 'https://tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey=30bd60a20b974c7c8f4f269a3f66f902',
-            ),
+            if (_tileUrl != null)
+              TileLayer(
+                urlTemplate: _tileUrl!,
+                userAgentPackageName: 'com.example.app',
+              ),
             if (_currentPosition != null)
               MarkerLayer(
                 markers: [

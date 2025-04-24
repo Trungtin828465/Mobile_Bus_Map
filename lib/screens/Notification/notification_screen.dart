@@ -17,10 +17,10 @@ class NotificationScreen extends StatelessWidget {
           elevation: 0,
           bottom: const TabBar(
             tabs: [
-              Tab(text: 'Thông báo'),
               Tab(text: 'Tin tức'),
+              Tab(text: 'Thông báo'),
             ],
-            indicatorColor: Colors.white,
+            indicatorColor: Colors.red,
             labelColor: Colors.white,
             unselectedLabelColor: Colors.grey,
           ),

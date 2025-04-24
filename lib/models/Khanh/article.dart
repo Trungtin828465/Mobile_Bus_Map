@@ -17,15 +17,15 @@ class Article {
 
   factory Article.fromJson(Map<String, dynamic> json) {
     return Article(
-      idBaiViet: json['iD_BaiViet'] ?? 0, // Khớp với iD_BaiViet
-      tieuDe: json['tieuDe'] ?? '',
-      tacGia: json['tacGia'] ?? '',
-      ngayDang: DateTime.parse(json['ngayDang'] ?? DateTime.now().toString()),
-      anhBaiViets: (json['anhBaiViets'] as List<dynamic>?)
+      idBaiViet: json['ID_BaiViet'] ?? 0, // Khớp với iD_BaiViet
+      tieuDe: json['TieuDe'] ?? '',
+      tacGia: json['TacGia'] ?? '',
+      ngayDang: DateTime.parse(json['NgayDang'] ?? DateTime.now().toString()),
+      anhBaiViets: (json['AnhBaiViets'] as List<dynamic>?)
           ?.map((e) => ArticleImage.fromJson(e))
           .toList() ??
           [],
-      noiDungBaiViets: (json['noiDungBaiViets'] as List<dynamic>?)
+      noiDungBaiViets: (json['NoiDungBaiViets'] as List<dynamic>?)
           ?.map((e) => ArticleContent.fromJson(e))
           .toList() ??
           [],
@@ -48,10 +48,10 @@ class ArticleImage {
 
   factory ArticleImage.fromJson(Map<String, dynamic> json) {
     return ArticleImage(
-      idAnh: json['iD_Anh'] ?? 0, // Khớp với iD_Anh
-      idBaiViet: json['iD_BaiViet'] ?? 0, // Khớp với iD_BaiViet
-      duongDan: json['duongDan'] ?? '', // Khớp với duongDan
-      moTa: json['moTa'] ?? '', // Khớp với moTa
+      idAnh: json['ID_Anh'] ?? 0, // Khớp với iD_Anh
+      idBaiViet: json['ID_BaiViet'] ?? 0, // Khớp với iD_BaiViet
+      duongDan: json['DuongDan'] ?? '', // Khớp với duongDan
+      moTa: json['MoTa'] ?? '', // Khớp với moTa
     );
   }
 }
@@ -71,10 +71,10 @@ class ArticleContent {
 
   factory ArticleContent.fromJson(Map<String, dynamic> json) {
     return ArticleContent(
-      idNoiDung: json['iD_NoiDung'] ?? 0, // Khớp với iD_NoiDung
-      idBaiViet: json['iD_BaiViet'] ?? 0, // Khớp với iD_BaiViet
-      noiDung: json['noiDung'] ?? '',
-      thuTu: json['thuTu'] ?? 0, // Khớp với thuTu
+      idNoiDung: json['ID_NoiDung'] ?? 0, // Khớp với iD_NoiDung
+      idBaiViet: json['ID_BaiViet'] ?? 0, // Khớp với iD_BaiViet
+      noiDung: json['NoiDung'] ?? '',
+      thuTu: json['ThuTu'] ?? 0, // Khớp với thuTu
     );
   }
 }

@@ -88,17 +88,91 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
                     style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
+                  // Card(
+                  //   elevation: 4,
+                  //   child: Padding(
+                  //     padding: const EdgeInsets.all(16.0),
+                  //     child: Row(
+                  //       children: [
+                  //         Image.network(
+                  //           'http://openweathermap.org/img/wn/${forecastItems[0].weather[0].icon}@2x.png',
+                  //           width: 50,
+                  //           height: 50,
+                  //           errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+                  //         ),
+                  //         const SizedBox(width: 10),
+                  //         Expanded(
+                  //           child: Column(
+                  //             crossAxisAlignment: CrossAxisAlignment.start,
+                  //             children: [
+                  //               Text(
+                  //                 'Nhiệt độ: ${forecastItems[0].main.temp?.toStringAsFixed(1) ?? 'N/A'}°C',
+                  //                 style: const TextStyle(fontSize: 18),
+                  //               ),
+                  //               Text(
+                  //                 'Mô tả: ${WeatherDescriptionTranslator.translateDescription(forecastItems[0].weather[0].description)}',
+                  //                 style: const TextStyle(fontSize: 16),
+                  //               ),
+                  //               Text(
+                  //                 'Độ ẩm: ${forecastItems[0].main.humidity?.toString() ?? 'N/A'}%',
+                  //                 style: const TextStyle(fontSize: 16),
+                  //               ),
+                  //               Text(
+                  //                 'Tốc độ gió: ${forecastItems[0].wind.speed?.toStringAsFixed(2) ?? 'N/A'} m/s',
+                  //                 style: const TextStyle(fontSize: 16),
+                  //               ),
+                  //             ],
+                  //           ),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
                   Card(
                     elevation: 4,
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Row(
                         children: [
-                          Image.network(
-                            'http://openweathermap.org/img/wn/${forecastItems[0].weather[0].icon}@2x.png',
-                            width: 50,
-                            height: 50,
-                            errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+                          Builder(
+                            builder: (context) {
+                              final translatedDescription = WeatherDescriptionTranslator.translateDescription(
+                                forecastItems[0].weather[0].description,
+                              );
+
+                              if (translatedDescription == 'Mây u ám') {
+                                return Image.asset(
+                                  'assets/img/may.png',
+                                  width: 50,
+                                  height: 50,
+                                );
+                              } else if (translatedDescription == 'Mây rải rác') {
+                                return Image.asset(
+                                  'assets/img/nangvua.png',
+                                  width: 50,
+                                  height: 50,
+                                );
+                              } else if (translatedDescription == 'Nắng vừa') {
+                                return Image.asset(
+                                  'assets/img/nang.png',
+                                  width: 50,
+                                  height: 50,
+                                );
+                              }
+                              else if (translatedDescription == 'Mưa vừa') {
+                                return Image.asset(
+                                  'assets/img/mua.png',
+                                  width: 50,
+                                  height: 50,
+                                );
+                              } else {
+                                return  Image.asset(
+                                      'assets/img/samset.png', width: 50,
+                                  height: 50,
+                                  errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+                                );
+                              }
+                            },
                           ),
                           const SizedBox(width: 10),
                           Expanded(
@@ -128,6 +202,8 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
                       ),
                     ),
                   ),
+
+
                   const SizedBox(height: 20),
 
                   // Dự báo 5 ngày
