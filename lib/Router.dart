@@ -81,12 +81,12 @@ import 'package:busmap/screens/Home/HomeMasterScreen.dart';
 class FluroRouterConfig {
   static final FluroRouter router = FluroRouter();
 
-  // Handler cho route gốc
-  // static final Handler _rootHandler = Handler(
-  //   handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
-  //     return  BusMapApp();
-  //   },
-  // );
+ // Handler cho route gốc
+  static final Handler _rootHandler = Handler(
+    handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
+      return  BusMapApp();
+    },
+  );
   // static final Handler _usrAdminChat = Handler(
   //   handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
   //     return  UserChatUserListScreen();
@@ -167,10 +167,10 @@ class FluroRouterConfig {
   );
 
   static void setupRouter() {
-    // router.define(
-    //   '/', // Route gốc
-    //   handler: _rootHandler,
-    // );
+    router.define(
+      '/', // Route gốc
+      handler: _rootHandler,
+    );
 
     router.define(
       '/home',

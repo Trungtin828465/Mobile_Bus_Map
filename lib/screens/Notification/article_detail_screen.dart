@@ -1,356 +1,256 @@
-// import 'package:flutter/material.dart';
-// import 'package:intl/intl.dart';
-// import 'package:busmap/models/Khanh/article.dart';
-// import 'package:busmap/service/Khanh/article_service.dart';
-//
-// class ArticleDetailScreen extends StatefulWidget {
-//   final int articleId;
-//
-//   const ArticleDetailScreen({super.key, required this.articleId});
-//
-//   @override
-//   State<ArticleDetailScreen> createState() => _ArticleDetailScreenState();
-// }
-//
-// class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
-//   late Future<Article> futureArticle;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     print('Article ID: ${widget.articleId}'); // In log để kiểm tra ID
-//     futureArticle = ArticleService().getArticleById(widget.articleId);
-//   }
-//
-//   // Hàm để xen kẽ nội dung và ảnh
-//   List<Widget> buildContentWithImages(Article article) {
-//     List<Widget> widgets = [];
-//     final contents = article.noiDungBaiViets;
-//     final images = article.anhBaiViets;
-//
-//     // Sắp xếp nội dung theo thứ tự thuTu
-//     contents.sort((a, b) => a.thuTu.compareTo(b.thuTu));
-//
-//     // Tính toán vị trí để xen kẽ ảnh
-//     int contentCount = contents.length;
-//     int imageCount = images.length;
-//     double step = contentCount / (imageCount + 1); // Khoảng cách giữa các ảnh
-//
-//     int contentIndex = 0;
-//     int imageIndex = 0;
-//
-//     // Thêm khoảng cách trước khi hiển thị nội dung (giống code dưới)
-//     widgets.add(const SizedBox(height: 8));
-//
-//     // Xen kẽ nội dung và ảnh
-//     for (int i = 0; i < contentCount + imageCount; i++) {
-//       // Kiểm tra xem có nên chèn ảnh tại vị trí này không
-//       if (imageIndex < imageCount && i == ((imageIndex + 1) * step).floor()) {
-//         final image = images[imageIndex];
-//         widgets.add(Padding(
-//           padding: const EdgeInsets.only(bottom: 8.0),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               ClipRRect(
-//                 borderRadius: BorderRadius.circular(8),
-//                 child: Image.network(
-//                   image.duongDan,
-//                   fit: BoxFit.cover,
-//                   width: double.infinity,
-//                   height: 200,
-//                   errorBuilder: (context, error, stackTrace) {
-//                     return const Text(
-//                       'Không thể tải hình ảnh',
-//                       style: TextStyle(color: Colors.red),
-//                     );
-//                   },
-//                 ),
-//               ),
-//               const SizedBox(height: 4),
-//               Text(
-//                 image.moTa,
-//                 style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-//               ),
-//             ],
-//           ),
-//         ));
-//         imageIndex++;
-//       } else if (contentIndex < contentCount) {
-//         // Thêm nội dung
-//         final content = contents[contentIndex];
-//         widgets.add(Padding(
-//           padding: const EdgeInsets.only(bottom: 8.0),
-//           child: Text(
-//             ' ${content.noiDung}', // Thụt đầu dòng giống code dưới
-//             style: const TextStyle(fontSize: 16),
-//           ),
-//         ));
-//         contentIndex++;
-//       }
-//     }
-//
-//     return widgets;
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Chi tiết bài viết'),
-//       ),
-//       body: FutureBuilder<Article>(
-//         future: futureArticle,
-//         builder: (context, snapshot) {
-//           if (snapshot.hasData) {
-//             final article = snapshot.data!;
-//             return SingleChildScrollView(
-//               padding: const EdgeInsets.all(16.0),
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   // Tiêu đề bài viết
-//                   Text(
-//                     article.tieuDe,
-//                     style: const TextStyle(
-//                       fontSize: 22,
-//                       fontWeight: FontWeight.bold,
-//                     ),
-//                   ),
-//                   const SizedBox(height: 8),
-//                   // Tác giả và ngày đăng
-//                   Text(
-//                     'Tác giả: ${article.tacGia} - Ngày: ${DateFormat('yyyy-MM-dd').format(article.ngayDang)}',
-//                     style: TextStyle(color: Colors.grey[700]),
-//                   ),
-//                   const SizedBox(height: 16),
-//                   // Hiển thị nội dung và ảnh xen kẽ
-//                   ...buildContentWithImages(article),
-//                 ],
-//               ),
-//             );
-//           } else if (snapshot.hasError) {
-//             String errorMessage = snapshot.error.toString();
-//             if (errorMessage.contains('Status 404')) {
-//               errorMessage = 'Bài viết không tồn tại hoặc đã bị xóa.';
-//             } else {
-//               errorMessage = 'Không thể tải bài viết: $errorMessage';
-//             }
-//             return Center(
-//               child: Column(
-//                 mainAxisAlignment: MainAxisAlignment.center,
-//                 children: [
-//                   const Icon(
-//                     Icons.error_outline,
-//                     color: Colors.red,
-//                     size: 60,
-//                   ),
-//                   const SizedBox(height: 16),
-//                   Text(
-//                     errorMessage,
-//                     style: TextStyle(fontSize: 18, color: Colors.grey[700]),
-//                     textAlign: TextAlign.center,
-//                   ),
-//                   const SizedBox(height: 16),
-//                   ElevatedButton(
-//                     onPressed: () {
-//                       setState(() {
-//                         futureArticle = ArticleService().getArticleById(widget.articleId);
-//                       });
-//                     },
-//                     child: const Text('Thử lại'),
-//                   ),
-//                 ],
-//               ),
-//             );
-//           }
-//           return const Center(child: CircularProgressIndicator());
-//         },
-//       ),
-//     );
-//   }
-// }
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:busmap/models/Khanh/article.dart';
-import 'package:busmap/service/Khanh/article_service.dart';
 
-class ArticleDetailScreen extends StatefulWidget {
-  final int articleId;
-  const ArticleDetailScreen({super.key, required this.articleId});
+class Article_DetailScreen extends StatelessWidget {
+  final Article article;
+  const Article_DetailScreen({Key? key, required this.article}) : super(key: key);
 
-  @override
-  State<ArticleDetailScreen> createState() => _ArticleDetailScreenState();
-}
-
-class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
-  late Future<Article> futureArticle;
-
-  @override
-  void initState() {
-    super.initState();
-    futureArticle = ArticleService().getArticleById(widget.articleId);
-  }
-
-  // ---------- BUILD UI ----------
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
+    // Hàm xây dựng nội dung và ảnh theo thứ tự
+    List<Widget> buildContentWithImages() {
+      List<Widget> widgets = [];
+      final contents = article.contents;
+      final images = article.images;
+
+      // Sắp xếp nội dung theo thứ tự
+      contents.sort((a, b) => a.order.compareTo(b.order));
+
+      // Ghép đôi nội dung và ảnh theo thứ tự
+      int imageIndex = 0;
+
+      for (int contentIndex = 0; contentIndex < contents.length; contentIndex++) {
+        final content = contents[contentIndex];
+
+        // Thêm nội dung với animation
+        widgets.add(
+          AnimatedOpacity(
+            opacity: 1.0,
+            duration: const Duration(milliseconds: 500),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: Text(
+                content.content,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.black87,
+                  height: 1.5, // Khoảng cách dòng
+                  fontFamily: 'Roboto', // Font chữ dễ đọc
+                ),
+              ),
+            ),
+          ),
+        );
+
+        // Thêm ảnh nếu có ảnh tương ứng
+        if (imageIndex < images.length) {
+          final image = images[imageIndex];
+          final String localImagePath = 'assets/img/${image.url}';
+          widgets.add(
+            AnimatedOpacity(
+              opacity: 1.0,
+              duration: const Duration(milliseconds: 500),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 2,
+                            blurRadius: 8,
+                            offset: const Offset(0, 4), // Đổ bóng
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.asset(
+                          localImagePath,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: 250, // Tăng chiều cao ảnh để nổi bật hơn
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              height: 250,
+                              color: Colors.grey[200],
+                              child: const Center(
+                                child: Text(
+                                  'Không thể tải hình ảnh',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      image.description,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+          imageIndex++;
+        }
+      }
+
+      return widgets;
+    }
+
+    // Lấy ảnh bìa (ảnh đầu tiên)
+    Widget buildCoverImage() {
+      if (article.images.isNotEmpty) {
+
+        final coverImage = article.images[0];
+        final String coverImagePath = 'assets/img/${coverImage.url}';
+        return Container(
+          height: 300,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.black.withOpacity(0.3),
+                Colors.black.withOpacity(0.7),
+              ],
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
+            ),
+            child: Image.asset(
+              coverImagePath,
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: 300,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  height: 300,
+                  color: Colors.grey[300],
+                  child: const Center(
+                    child: Text(
+                      'Không thể tải ảnh bìa',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      }
+      return const SizedBox.shrink();
+    }
 
     return Scaffold(
-      body: FutureBuilder<Article>(
-        future: futureArticle,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final article = snapshot.data!;
-
-            return CustomScrollView(
-              slivers: [
-                // Ảnh cover co giãn khi cuộn
-                SliverAppBar(
-                  pinned: true,
-                  stretch: true,
-                  expandedHeight: 240,
-                  leading: BackButton(color: Colors.white),
-                  flexibleSpace: FlexibleSpaceBar(
-                    titlePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    collapseMode: CollapseMode.parallax,
-                    background: Stack(
-                      fit: StackFit.expand,
+      body: CustomScrollView(
+        slivers: [
+          // AppBar với ảnh bìa
+          SliverAppBar(
+            expandedHeight: 300,
+            floating: false,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  buildCoverImage(),
+                  Positioned(
+                    bottom: 20,
+                    left: 20,
+                    right: 20,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-
-                        // lớp mờ để chữ trắng nổi bật
-                        const DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [Colors.transparent, Colors.black54],
-                            ),
+                        Text(
+                          article.title,
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            shadows: [
+                              Shadow(
+                                color: Colors.black54,
+                                offset: Offset(1, 1),
+                                blurRadius: 3,
+                              ),
+                            ],
                           ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.person,
+                              color: Colors.white70,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Tác giả: ${article.author}',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.white70,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            const Icon(
+                              Icons.calendar_today,
+                              color: Colors.white70,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Ngày: ${article.datePosted.toString().substring(0, 10)}',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-                ),
-
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate([
-                      // Tiêu đề
-                      Text(
-                        article.tieuDe,
-                        style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
-                      ),
-                      const SizedBox(height: 8),
-                      // Meta data
-                      Text(
-                        'Tác giả: ${article.tacGia}  •  '
-                            '${DateFormat('dd/MM/yyyy').format(article.ngayDang)}',
-                        style: textTheme.bodySmall?.copyWith(color: Colors.grey),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Nội dung + ảnh xen kẽ
-                      ..._buildContent(article, textTheme),
-                      const SizedBox(height: 40),
-                    ]),
-                  ),
-                ),
-              ],
-            );
-          } else if (snapshot.hasError) {
-            return _buildError(snapshot.error.toString());
-          }
-          return const Center(child: CircularProgressIndicator());
-        },
-      ),
-    );
-  }
-
-  // ---------- CONTENT & IMAGE MIX ----------
-  List<Widget> _buildContent(Article article, TextTheme textTheme) {
-    final contents = [...article.noiDungBaiViets]..sort((a, b) => a.thuTu.compareTo(b.thuTu));
-    final images = article.anhBaiViets;
-
-    final widgets = <Widget>[];
-    final step = contents.length / (images.length + 1);
-
-    int c = 0, i = 0;
-    for (int idx = 0; idx < contents.length + images.length; idx++) {
-      if (i < images.length && idx == ((i + 1) * step).floor()) {
-        // ảnh
-        widgets.add(
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    images[i].duongDan,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) =>
-                        Container(height: 200, color: Colors.grey.shade300),
-                  ),
-                ),
-                if (images[i].moTa.isNotEmpty) ...[
-                  const SizedBox(height: 6),
-                  Text(
-                    images[i].moTa,
-                    style: textTheme.bodySmall?.copyWith(color: Colors.grey[700]),
-                  ),
                 ],
-              ],
+              ),
+            ),
+            backgroundColor: Colors.blueAccent,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
             ),
           ),
-        );
-        i++;
-      } else if (c < contents.length) {
-        widgets.add(
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Text(
-              ' ${contents[c].noiDung}', // kí tự khoảng trắng cho thụt dòng đầu
-              style: textTheme.bodyMedium?.copyWith(height: 1.6, fontSize: 16),
+          // Nội dung bài viết
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 16),
+                  ...buildContentWithImages(),
+                ],
+              ),
             ),
           ),
-        );
-        c++;
-      }
-    }
-    return widgets;
-  }
-
-  // ---------- ERROR ----------
-  Widget _buildError(String error) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline, color: Colors.red, size: 60),
-            const SizedBox(height: 16),
-            Text(
-              error.contains('404')
-                  ? 'Bài viết không tồn tại hoặc đã bị xoá.'
-                  : 'Không thể tải bài viết: $error',
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 20),
-            FilledButton(
-              onPressed: () => setState(() => futureArticle =
-                  ArticleService().getArticleById(widget.articleId)),
-              child: const Text('Thử lại'),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }

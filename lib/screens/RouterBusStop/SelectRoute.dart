@@ -113,18 +113,18 @@ class _BusScreenState extends State<BusSelectRount> {
                   child: Text("TẤT CẢ", style: TextStyle(color: !showFavorites ? Colors.white : Colors.green)),
                 ),
               ),
-              GestureDetector(
-                // onTap: () => setState(() => toggleFavorites()),
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
-                  decoration: BoxDecoration(
-                    color: showFavorites ? Colors.green : Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.green),
-                  ),
-                  child: Text("YÊU THÍCH", style: TextStyle(color: showFavorites ? Colors.white : Colors.green)),
-                ),
-              ),
+              // GestureDetector(
+              //   // onTap: () => setState(() => toggleFavorites()),
+              //   child: Container(
+              //     padding: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+              //     decoration: BoxDecoration(
+              //       color: showFavorites ? Colors.green : Colors.white,
+              //       borderRadius: BorderRadius.circular(20),
+              //       border: Border.all(color: Colors.green),
+              //     ),
+              //     child: Text("YÊU THÍCH", style: TextStyle(color: showFavorites ? Colors.white : Colors.green)),
+              //   ),
+              // ),
             ],
           ),
 

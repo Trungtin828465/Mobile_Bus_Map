@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:busmap/models/Admin/BaiViet.dart';
 import 'package:busmap/service/Admin/api_baiviet.dart';
@@ -47,6 +46,10 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
       if (_contentControllers.length > 1) {
         _contentControllers[index].dispose();
         _contentControllers.removeAt(index);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Phải có ít nhất một đoạn nội dung!')),
+        );
       }
     });
   }
@@ -58,6 +61,10 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
         _imageControllers[index]['url']?.dispose();
         _imageControllers[index]['description']?.dispose();
         _imageControllers.removeAt(index);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Phải có ít nhất một ảnh!')),
+        );
       }
     });
   }
@@ -69,8 +76,8 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
           .asMap()
           .entries
           .map((entry) => ArticleContent(
-        id: 0, // API doesn't require this, set to 0
-        articleId: 0, // API doesn't require this, set to 0
+        id: 0,
+        articleId: 0,
         order: entry.key + 1,
         content: entry.value.text,
       ))
@@ -78,20 +85,28 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
 
       // Tạo danh sách ảnh từ các controller
       List<ArticleImage> images = _imageControllers
-          .where((controller) =>
-      controller['url']!.text.isNotEmpty &&
-          controller['description']!.text.isNotEmpty)
+          .where((controller) => controller['url']!.text.isNotEmpty) // Chỉ yêu cầu URL
           .map((controller) => ArticleImage(
-        id: 0, // API doesn't require this, set to 0
-        articleId: 0, // API doesn't require this, set to 0
+        id: 0,
+        articleId: 0,
         url: controller['url']!.text,
-        description: controller['description']!.text,
+        description: controller['description']!.text.isEmpty
+            ? '' // Gán giá trị rỗng nếu không có mô tả
+            : controller['description']!.text,
       ))
           .toList();
 
+      // Kiểm tra xem có ít nhất một ảnh hợp lệ không
+      if (images.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Vui lòng thêm ít nhất một ảnh hợp lệ!')),
+        );
+        return;
+      }
+
       // Tạo bài viết mới
       Article newArticle = Article(
-        id: 0, // API doesn't require this, set to 0
+        id: 0,
         title: _titleController.text,
         datePosted: DateTime.now(),
         author: _authorController.text,
@@ -99,15 +114,21 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
         contents: contents,
       );
 
-      bool success = await apiService.createArticle(newArticle);
-      if (success) {
+      try {
+        bool success = await apiService.createArticle(newArticle);
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Thêm bài viết thành công!')),
+          );
+          Navigator.pop(context);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Lỗi khi thêm bài viết!')),
+          );
+        }
+      } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Thêm bài viết thành công!')),
-        );
-        Navigator.pop(context);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Lỗi khi thêm bài viết!')),
+          SnackBar(content: Text('Lỗi khi gửi bài viết: $e')),
         );
       }
     }
@@ -218,17 +239,20 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
                               TextFormField(
                                 controller: controller['url'],
                                 decoration: const InputDecoration(
-                                  labelText: 'Tên file ảnh (ví dụ: image.jpg)',
+                                  labelText: 'URL ảnh (ví dụ: image.jpg)',
                                   border: OutlineInputBorder(),
                                 ),
+                                validator: (value) =>
+                                value!.isEmpty ? 'Nhập URL ảnh' : null,
                               ),
                               const SizedBox(height: 8),
                               TextFormField(
                                 controller: controller['description'],
                                 decoration: const InputDecoration(
-                                  labelText: 'Mô tả ảnh',
+                                  labelText: 'Mô tả ảnh (tùy chọn)',
                                   border: OutlineInputBorder(),
                                 ),
+                                // Không yêu cầu validator cho mô tả
                               ),
                             ],
                           ),

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:busmap/models/Admin/BaiViet.dart';
 import 'package:busmap/service/Admin/api_baiviet.dart';
@@ -27,7 +26,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
 
   void _refreshArticles() {
     setState(() {
-      futureArticles = apiService.fetchArticles(); // Cập nhật danh sách
+      futureArticles = apiService.fetchArticles();
     });
   }
 

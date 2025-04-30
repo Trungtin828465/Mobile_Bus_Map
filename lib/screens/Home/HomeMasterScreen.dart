@@ -23,7 +23,7 @@ class _HomeMasterState extends State<HomeMaster> {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = [
-    const HomeContent(),
+     HomeContent(),
     NotificationScreen(),
     const Center(child: Text('Quét mã')),
     const FavoriteScreen(),
@@ -53,7 +53,7 @@ class _HomeMasterState extends State<HomeMaster> {
             BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Thông báo'),
             BottomNavigationBarItem(icon: Icon(Icons.qr_code), label: 'Quét mã'),
             BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Yêu thích'),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Tài khoản1'),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Tài khoản'),
           ],
         ),
 

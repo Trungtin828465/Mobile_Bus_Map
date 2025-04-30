@@ -2,11 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:intl/intl.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:busmap/Router.dart';
 // Class to display a bus route map with two tabs: Route Details and Bus Stops
 class BusRouteMapPage extends StatefulWidget {
   final Map<String, dynamic> routeData; // API response
+  final String fromLocation;
+  final String toLocation;
 
-  const BusRouteMapPage({Key? key, required this.routeData}) : super(key: key);
+  const BusRouteMapPage({Key? key, required this.routeData, required this.fromLocation,
+    required this.toLocation,}) : super(key: key);
 
   @override
   _BusRouteMapPageState createState() => _BusRouteMapPageState();
@@ -24,6 +31,7 @@ class _BusRouteMapPageState extends State<BusRouteMapPage> with SingleTickerProv
   int totalFare = 0;
   bool isLoading = true;
   late TabController _tabController;
+  final MapController _mapController = MapController();
 
   @override
   void initState() {
@@ -36,6 +44,32 @@ class _BusRouteMapPageState extends State<BusRouteMapPage> with SingleTickerProv
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+
+  Future<void> saveTrip(Trip trip) async {
+    // Replace '8080' with the actual port your backend server is running on
+    final url = Uri.parse('https://10.0.2.2:7222/api/TripHistory'); // For Android emulator
+    // If testing on a real device, use your computer's IP, e.g., 'http://192.168.1.x:8080/api/TripHistory'
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(trip.toJson()),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('Lưu lịch sử chuyến đi thành công!');
+      } else {
+        print('Lỗi: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        throw Exception('Failed to save Trip: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error saving Trip: $e');
+      throw Exception('Error saving Trip: $e');
+    }
   }
 
   void processRouteData() {
@@ -114,6 +148,7 @@ class _BusRouteMapPageState extends State<BusRouteMapPage> with SingleTickerProv
             const Center(child: Text("Không có dữ liệu trạm xe buýt!"))
           else
             FlutterMap(
+              mapController: _mapController, // thêm dòng này
               options: MapOptions(
                 initialCenter: LatLng(stops[0]["Lat"], stops[0]["Lng"]),
                 initialZoom: 15,
@@ -161,11 +196,11 @@ class _BusRouteMapPageState extends State<BusRouteMapPage> with SingleTickerProv
             ),
           // Nút Back
           Positioned(
-            top: 10,
+            top: 30,
             left: 10,
             child: FloatingActionButton(
               onPressed: () {
-                //  FluroRouterConfig.navigateToPage(context, "/findway", slideFromRight: false);
+                  FluroRouterConfig.navigateToPage(context, "/findway", slideFromRight: false);
               },
               backgroundColor: Colors.white,
               elevation: 3,
@@ -173,6 +208,90 @@ class _BusRouteMapPageState extends State<BusRouteMapPage> with SingleTickerProv
               child: const Icon(Icons.arrow_back, color: Colors.black),
             ),
           ),
+          //nut bat dau
+          Positioned(
+            top: 30,
+            left: 340,
+            child: FloatingActionButton(
+              onPressed: () async {
+                if (stops.isNotEmpty) {
+                  final startPoint = LatLng(stops[0]["Lat"], stops[0]["Lng"]);
+                  _mapController.move(startPoint, 15);
+
+                  // Debug: Print all routeDetails entries
+                  print('routeDetails: $routeDetails');
+                  for (var i = 0; i < routeDetails.length; i++) {
+                    print('routeDetails[$i]: ${routeDetails[i]}');
+                    print('routeDetails[$i]["RouteNo"]: ${routeDetails[i]["RouteNo"]}');
+                  }
+
+                  // Function to get the first valid RouteNo
+                  String getRouteNumber() {
+                    for (var detail in routeDetails) {
+                      if (detail["RouteNo"] != null) {
+                        return detail["RouteNo"].toString();
+                      }
+                    }
+                    return "No Route Available";
+                  }
+
+                  // Validate before saving
+                  String routeNumber = routeDetails.isNotEmpty ? getRouteNumber() : "No Route Available";
+                  if (routeNumber == "No Route Available") {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Cannot save trip: No valid route number found')),
+                    );
+                    return;
+                  }
+
+                  // Create a Trip object
+                  final trip = Trip(
+                    customerId: 1, // Replace with actual customerId
+                    startLocation: widget.fromLocation,
+                    endLocation: widget.toLocation,
+                    startTime: DateTime.now(),
+                    endTime: DateTime.now().add(Duration(minutes: (totalBusDistance * 60).toInt())),
+                    routeNumber: routeNumber,
+                    cost: totalFare,
+                    durationMinutes: (totalBusDistance * 60).toInt(),
+                    walkingDistance: (totalWalkingDistance * 1000).toInt(),
+                    busDistance: totalBusDistance,
+                  );
+
+                  // Save the trip
+                  try {
+                    await saveTrip(trip);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Trip saved successfully!')),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error saving trip: $e')),
+                    );
+                  }
+                }
+              },
+              backgroundColor: Colors.white,
+              elevation: 3,
+              shape: const CircleBorder(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.fmd_good_sharp, color: Colors.red, size: 22),
+                  SizedBox(height: 2),
+                  Text(
+                    "Start",
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
           // Draggable bottom sheet for resizing
           DraggableScrollableSheet(
             initialChildSize: 0.3,
@@ -453,5 +572,48 @@ class _BusRouteMapPageState extends State<BusRouteMapPage> with SingleTickerProv
         ],
       ),
     );
+  }
+}
+
+
+
+class Trip {
+  final int customerId;
+  final String startLocation;
+  final String endLocation;
+  final DateTime startTime;
+  final DateTime? endTime;
+  final String routeNumber;
+  final int? cost;
+  final int? durationMinutes;
+  final int? walkingDistance;
+  final double? busDistance;
+
+  Trip({
+    required this.customerId,
+    required this.startLocation,
+    required this.endLocation,
+    required this.startTime,
+    this.endTime,
+    required this.routeNumber,
+    this.cost,
+    this.durationMinutes,
+    this.walkingDistance,
+    this.busDistance,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'customerId': customerId,
+      'startLocation': startLocation,
+      'endLocation': endLocation,
+      'startTime': startTime.toIso8601String(),
+      'endTime': endTime?.toIso8601String(),
+      'routeNumber': routeNumber,
+      'cost': cost,
+      'durationMinutes': durationMinutes,
+      'walkingDistance': walkingDistance,
+      'busDistance': busDistance,
+    };
   }
 }

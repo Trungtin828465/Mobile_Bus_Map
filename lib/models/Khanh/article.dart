@@ -1,80 +1,110 @@
 class Article {
-  final int idBaiViet;
-  final String tieuDe;
-  final String tacGia;
-  final DateTime ngayDang;
-  final List<ArticleImage> anhBaiViets;
-  final List<ArticleContent> noiDungBaiViets;
+  final int id;
+  final String title;
+  final DateTime datePosted;
+  final String author;
+  final List<ArticleImage> images;
+  final List<ArticleContent> contents;
 
   Article({
-    required this.idBaiViet,
-    required this.tieuDe,
-    required this.tacGia,
-    required this.ngayDang,
-    required this.anhBaiViets,
-    required this.noiDungBaiViets,
+    required this.id,
+    required this.title,
+    required this.datePosted,
+    required this.author,
+    required this.images,
+    required this.contents,
   });
 
   factory Article.fromJson(Map<String, dynamic> json) {
+    // Xử lý danh sách hình ảnh
+    List<ArticleImage> imagesList = [];
+    if (json.containsKey('AnhBaiViets') && json['AnhBaiViets'] != null) {
+      var list = json['AnhBaiViets'] as List;
+      imagesList = list.map((i) => ArticleImage.fromJson(i)).toList();
+    }
+
+    // Xử lý danh sách nội dung
+    List<ArticleContent> contentsList = [];
+    if (json.containsKey('NoiDungBaiViets') && json['NoiDungBaiViets'] != null) {
+      var list = json['NoiDungBaiViets'] as List;
+      contentsList = list.map((i) => ArticleContent.fromJson(i)).toList();
+    }
     return Article(
-      idBaiViet: json['ID_BaiViet'] ?? 0, // Khớp với iD_BaiViet
-      tieuDe: json['TieuDe'] ?? '',
-      tacGia: json['TacGia'] ?? '',
-      ngayDang: DateTime.parse(json['NgayDang'] ?? DateTime.now().toString()),
-      anhBaiViets: (json['AnhBaiViets'] as List<dynamic>?)
-          ?.map((e) => ArticleImage.fromJson(e))
-          .toList() ??
-          [],
-      noiDungBaiViets: (json['NoiDungBaiViets'] as List<dynamic>?)
-          ?.map((e) => ArticleContent.fromJson(e))
-          .toList() ??
-          [],
+      id: json['ID_BaiViet'] ?? 0,
+      title: json['TieuDe'] ?? 'Không có tiêu đề',
+      datePosted: json['NgayDang'] != null
+          ? DateTime.parse(json['NgayDang'])
+          : DateTime.now(),
+      author: json['TacGia'] ?? 'Không rõ tác giả',
+      images: imagesList,
+      contents: contentsList,
     );
   }
-}
-
-class ArticleImage {
-  final int idAnh;
-  final int idBaiViet;
-  final String duongDan; // Sửa urlAnh thành duongDan
-  final String moTa; // Sửa description thành moTa
+  Map<String, dynamic> toJson() {
+    return {
+      "TieuDe": title,
+      "NgayDang": datePosted.toUtc().toIso8601String(),
+      "TacGia": author,
+      "AnhBaiViets": images.map((img) => img.toJson()).toList(),
+      "NoiDungBaiViets": contents.map((content) => content.toJson()).toList(),
+    };
+  }
+}class ArticleImage {
+  final int id;
+  final int articleId;
+  final String url;
+  final String description;
 
   ArticleImage({
-    required this.idAnh,
-    required this.idBaiViet,
-    required this.duongDan,
-    required this.moTa,
+    required this.id,
+    required this.articleId,
+    required this.url,
+    required this.description,
   });
 
   factory ArticleImage.fromJson(Map<String, dynamic> json) {
     return ArticleImage(
-      idAnh: json['ID_Anh'] ?? 0, // Khớp với iD_Anh
-      idBaiViet: json['ID_BaiViet'] ?? 0, // Khớp với iD_BaiViet
-      duongDan: json['DuongDan'] ?? '', // Khớp với duongDan
-      moTa: json['MoTa'] ?? '', // Khớp với moTa
+      id: json['ID_Anh'] ?? 0,
+      articleId: json['ID_BaiViet'] ?? 0,
+      url: json['DuongDan'] ?? '',
+      description: json['MoTa'] ?? '',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "DuongDan": url,
+      "MoTa": description,
+    };
   }
 }
 
 class ArticleContent {
-  final int idNoiDung;
-  final int idBaiViet;
-  final String noiDung;
-  final int thuTu; // Sửa order thành thuTu
+  final int id;
+  final int articleId;
+  final int order;
+  final String content;
 
   ArticleContent({
-    required this.idNoiDung,
-    required this.idBaiViet,
-    required this.noiDung,
-    required this.thuTu,
+    required this.id,
+    required this.articleId,
+    required this.order,
+    required this.content,
   });
 
   factory ArticleContent.fromJson(Map<String, dynamic> json) {
     return ArticleContent(
-      idNoiDung: json['ID_NoiDung'] ?? 0, // Khớp với iD_NoiDung
-      idBaiViet: json['ID_BaiViet'] ?? 0, // Khớp với iD_BaiViet
-      noiDung: json['NoiDung'] ?? '',
-      thuTu: json['ThuTu'] ?? 0, // Khớp với thuTu
+      id: json['ID_NoiDung'] ?? 0,
+      articleId: json['ID_BaiViet'] ?? 0,
+      order: json['ThuTu'] ?? 0,
+      content: json['NoiDung'] ?? '',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "ThuTu": order,
+      "NoiDung": content,
+    };
   }
 }

@@ -146,7 +146,7 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
                                   width: 50,
                                   height: 50,
                                 );
-                              } else if (translatedDescription == 'Mây rải rác') {
+                              } else if (translatedDescription == 'Mây thưa') {
                                 return Image.asset(
                                   'assets/img/nangvua.png',
                                   width: 50,

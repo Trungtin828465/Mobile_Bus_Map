@@ -33,8 +33,8 @@ class BusMapApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       onGenerateRoute: FluroRouterConfig.router.generator,
-      //home: const WelcomeScreen(), // hoặc HomeMaster nếu bạn muốn vào luôn
-      home:  const HomeMaster(), // hoặc HomeMaster nếu bạn muốn vào luôn
+     // home: const HomeMaster(), // hoặc HomeMaster nếu bạn muốn vào luôn
+      home:  const WelcomeScreen(), // hoặc HomeMaster nếu bạn muốn vào luôn
 
     );
   }

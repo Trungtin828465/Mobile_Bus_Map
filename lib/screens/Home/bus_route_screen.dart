@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:busmap/models/Khanh/BusRoute/bus_route.dart';
 import 'package:busmap/service/Khanh/bus_route_service.dart';
-import 'package:busmap/screens/Home/bus_route_detail_screen.dart';
+// import 'package:busmap/screens/Home/bus_route_detail_screen.dart';
 import 'package:busmap/providers/Khanh/favorite_provider.dart';
+import 'package:busmap/screens/RouterBusStop/DetailBus.dart';
+
+
 
 class BusRouteScreen extends StatefulWidget {
   const BusRouteScreen({super.key});
@@ -150,7 +153,7 @@ class _BusRouteScreenState extends State<BusRouteScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => BusRouteDetailScreen(routeId: route.routeId.toString()),
+                                  builder: (context) => BusDetailScreen(routeId: route.routeId.toString()),
                                 ),
                               );
                             },

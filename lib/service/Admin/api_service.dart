@@ -18,7 +18,7 @@ class ApiService {
     }
   }
   Future<BusRouteDetail> fetchBusRouteDetail(String routeId) async {
-    final response = await http.get(Uri.parse('$apiUrl/getroutebyid/$routeId'));
+    final response = await http     .get(Uri.parse('$apiUrl/getroutebyid/$routeId'));
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
       return BusRouteDetail.fromJson(data);

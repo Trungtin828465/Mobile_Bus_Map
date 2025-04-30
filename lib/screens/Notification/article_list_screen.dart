@@ -2,8 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:busmap/models/Khanh/article.dart';
 import 'package:busmap/service/Khanh/article_service.dart';
-import 'article_detail_screen.dart';
-
+import 'package:busmap/screens/Notification/article_detail_screen.dart';
 class ArticleListScreen extends StatefulWidget {
   const ArticleListScreen({super.key});
 
@@ -47,8 +46,8 @@ class _ArticleListScreenState extends State<ArticleListScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => ArticleDetailScreen(
-                          articleId: article.idBaiViet,
+                        builder: (_) => Article_DetailScreen(
+                          article: article,
                         ),
                       ),
                     );
@@ -77,7 +76,7 @@ class _ArticleListScreenState extends State<ArticleListScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    article.tieuDe,
+                                    article.title,
                                     style: textTheme.titleMedium?.copyWith(
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -86,12 +85,12 @@ class _ArticleListScreenState extends State<ArticleListScreen> {
                                   ),
                                   const SizedBox(height: 6),
                                   Text(
-                                    'Tác giả: ${article.tacGia}',
+                                    'Tác giả: ${article.author}',
                                     style: textTheme.bodySmall,
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    _formatDate(article.ngayDang),
+                                    _formatDate(article.datePosted),
                                     style: textTheme.bodySmall?.copyWith(
                                       color: Colors.grey,
                                     ),

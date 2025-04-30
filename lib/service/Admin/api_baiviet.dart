@@ -50,30 +50,23 @@ class ApiService {
 
       HttpClientRequest request = await client.getUrl(Uri.parse(baseUrl));
       HttpClientResponse response = await request.close();
-      String jsonResponse = await response.transform(utf8.decoder).join();
-
-      print("🔹 API Response: $jsonResponse"); // Log JSON để kiểm tra
-      print("🔹 Status Code: ${response.statusCode}");
-
       if (response.statusCode == 200) {
+        String jsonResponse = await response.transform(utf8.decoder).join();
+        print("🔹 API Response: $jsonResponse"); // Log để kiểm tra dữ liệu
+
+        // Giải mã JSON
         var decodedJson = json.decode(jsonResponse);
 
-        // Nếu là danh sách trực tiếp
+        // Xử lý dữ liệu là danh sách trực tiếp
         if (decodedJson is List) {
           return decodedJson.map((json) => Article.fromJson(json)).toList();
-        }
-        // Nếu là đối tượng chứa "$values"
-        else if (decodedJson is Map<String, dynamic> && decodedJson.containsKey("\$values")) {
-          List<dynamic> data = decodedJson["\$values"];
-          return data.map((json) => Article.fromJson(json)).toList();
         } else {
-          throw Exception("Dữ liệu API không đúng định dạng mong đợi.");
+          throw Exception("Dữ liệu API không đúng định dạng mong đợi: không phải danh sách.");
         }
       } else {
         throw Exception("Lỗi khi tải danh sách bài viết: ${response.statusCode} - ${response.reasonPhrase}");
       }
     } catch (e) {
-      print("🚨 Lỗi: $e"); // Log lỗi chi tiết
       if (e is http.ClientException) {
         throw Exception("Lỗi kết nối API: Không thể kết nối tới server - $e");
       } else if (e is FormatException) {
@@ -83,6 +76,8 @@ class ApiService {
       }
     }
   }
+
+
   Future<bool> createArticle(Article article) async {
     try {
       HttpClient client = HttpClient();

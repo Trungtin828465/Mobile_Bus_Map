@@ -7,7 +7,7 @@ class ArticleDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Sắp xếp nội dung và ảnh xen kẽ
+    // Hàm xây dựng nội dung và ảnh theo thứ tự
     List<Widget> buildContentWithImages() {
       List<Widget> widgets = [];
       final contents = article.contents;
@@ -16,98 +16,241 @@ class ArticleDetailScreen extends StatelessWidget {
       // Sắp xếp nội dung theo thứ tự
       contents.sort((a, b) => a.order.compareTo(b.order));
 
-      // Tính toán vị trí để xen kẽ ảnh
-      int contentCount = contents.length; // 4 đoạn nội dung
-      int imageCount = images.length; // 3 ảnh
-      double step = contentCount / (imageCount + 1); // Khoảng cách giữa các ảnh
-
-      int contentIndex = 0;
+      // Ghép đôi nội dung và ảnh theo thứ tự
       int imageIndex = 0;
 
-      // Thêm tiêu đề "Nội dung" trước
-      // widgets.add(const Text(
-      //   // 'Nội dung:',
-      //   // style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-      // ));
-      widgets.add(const SizedBox(height: 8));
+      for (int contentIndex = 0; contentIndex < contents.length; contentIndex++) {
+        final content = contents[contentIndex];
 
-      // Xen kẽ nội dung và ảnh
-      for (int i = 0; i < contentCount + imageCount; i++) {
-        // Kiểm tra xem có nên chèn ảnh tại vị trí này không
-        if (imageIndex < imageCount && i == ((imageIndex + 1) * step).floor()) {
+        // Thêm nội dung với animation
+        widgets.add(
+          AnimatedOpacity(
+            opacity: 1.0,
+            duration: const Duration(milliseconds: 500),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: Text(
+                content.content,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.black87,
+                  height: 1.5, // Khoảng cách dòng
+                  fontFamily: 'Roboto', // Font chữ dễ đọc
+                ),
+              ),
+            ),
+          ),
+        );
+
+        // Thêm ảnh nếu có ảnh tương ứng
+        if (imageIndex < images.length) {
           final image = images[imageIndex];
           final String localImagePath = 'assets/img/${image.url}';
-          widgets.add(Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(
-                    localImagePath,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: 200,
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Text(
-                        'Không thể tải hình ảnh',
-                        style: TextStyle(color: Colors.red),
-                      );
-                    },
-                  ),
+          widgets.add(
+            AnimatedOpacity(
+              opacity: 1.0,
+              duration: const Duration(milliseconds: 500),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 2,
+                            blurRadius: 8,
+                            offset: const Offset(0, 4), // Đổ bóng
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.asset(
+                          localImagePath,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: 250, // Tăng chiều cao ảnh để nổi bật hơn
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              height: 250,
+                              color: Colors.grey[200],
+                              child: const Center(
+                                child: Text(
+                                  'Không thể tải hình ảnh',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      image.description,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  image.description,
-                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                ),
-              ],
+              ),
             ),
-          ));
+          );
           imageIndex++;
-        } else if (contentIndex < contentCount) {
-          // Thêm nội dung
-          final content = contents[contentIndex];
-          widgets.add(Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: Text(
-              ' ${content.content}',
-              style: const TextStyle(fontSize: 16),
-            ),
-          ));
-          contentIndex++;
         }
       }
 
       return widgets;
     }
 
+    // Lấy ảnh bìa (ảnh đầu tiên)
+    Widget buildCoverImage() {
+      if (article.images.isNotEmpty) {
+
+        final coverImage = article.images[0];
+        final String coverImagePath = 'assets/img/${coverImage.url}';
+        return Container(
+          height: 300,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.black.withOpacity(0.3),
+                Colors.black.withOpacity(0.7),
+              ],
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
+            ),
+            child: Image.asset(
+              coverImagePath,
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: 300,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  height: 300,
+                  color: Colors.grey[300],
+                  child: const Center(
+                    child: Text(
+                      'Không thể tải ảnh bìa',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      }
+      return const SizedBox.shrink();
+    }
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Chi tiết bài viết"),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Tiêu đề bài viết
-            Text(
-              article.title,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+      body: CustomScrollView(
+        slivers: [
+          // AppBar với ảnh bìa
+          SliverAppBar(
+            expandedHeight: 300,
+            floating: false,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  buildCoverImage(),
+                  Positioned(
+                    bottom: 20,
+                    left: 20,
+                    right: 20,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          article.title,
+                          style: const TextStyle(
+                            fontSize: 28,
+
+                            color: Colors.black,
+                            shadows: [
+                              Shadow(
+                                color: Colors.black54,
+                                offset: Offset(1, 1),
+                                blurRadius: 3,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.person,
+                              color: Colors.black,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Tác giả: ${article.author}',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.black,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            const Icon(
+                              Icons.calendar_today,
+                              color: Colors.black,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Ngày: ${article.datePosted.toString().substring(0, 10)}',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 8),
-            // Tác giả và ngày đăng
-            Text(
-              'Tác giả: ${article.author} - Ngày: ${article.datePosted.toString().substring(0, 10)}',
-              style: TextStyle(color: Colors.grey[700]),
+            backgroundColor: Colors.blueAccent,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
             ),
-            const SizedBox(height: 16),
-            // Hiển thị nội dung và ảnh xen kẽ
-            ...buildContentWithImages(),
-          ],
-        ),
+          ),
+          // Nội dung bài viết
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 16),
+                  ...buildContentWithImages(),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
