@@ -2,10 +2,10 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:geolocator/geolocator.dart'; // vị trí
 import 'dart:async';
 import 'dart:math' as math;
-import 'package:flutter_compass/flutter_compass.dart';
+import 'package:flutter_compass/flutter_compass.dart'; // xoay hướng
 import 'package:busmap/service/Dung/map_service.dart';
 import 'package:busmap/controllers/map_controller.dart';
 import 'dart:convert';
@@ -22,7 +22,7 @@ class _MapGpsState extends State<MapGps> {
   double _heading = 0.0; // Hướng di chuyển
   StreamSubscription<Position>? _positionStream;
   StreamSubscription<CompassEvent>? _compassStream;
- late MapControllerLogic controller;
+  late MapControllerLogic controller;
   String? _tileUrl;
 
   @override
@@ -100,7 +100,7 @@ class _MapGpsState extends State<MapGps> {
 
   /// Theo dõi hướng xoay của thiết bị
   void _trackCompass() {
-    _compassStream?.cancel(); // Hủy stream cũ nếu có
+    _compassStream?.cancel();
     _compassStream = FlutterCompass.events?.listen((CompassEvent event) {
       setState(() {
         _heading = event.heading ?? 0.0;

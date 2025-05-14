@@ -144,7 +144,7 @@ class _UserChatListScreenState extends State<UserChatUserListScreen> {
               itemBuilder: (context, index) {
                 final chat = chats[index];
                 return ListTile(
-                  title: Text('Cuộc trò chuyện với User ${chat.userId}'),
+                  title: Text('Cuộc trò chuyện với Admin'),
                   subtitle: Text('Tạo lúc: ${chat.createdAt.toString()}'),
                   onTap: () {
                     Navigator.push(

@@ -71,7 +71,10 @@ class _AccountManagementScreenState extends State<AccountManagementScreen> {
               SizedBox(height: 10),
               Text(" Email: ${account.email}", style: TextStyle(fontSize: 18)),
               SizedBox(height: 10),
-              Text("📧 Password: ${account.password}", style: TextStyle(fontSize: 18)),
+              Text(
+                "📧 Password: ${account.password != null && account.password.length > 2 ? '*' * (account.password.length - 2) + account.password.substring(account.password.length - 2) : account.password ?? 'Không có'}",
+                style: TextStyle(fontSize: 18),
+              ),
               SizedBox(height: 10),
               Text("📞 Số điện thoại: ${account.phoneNumber ?? 'Không có'}", style: TextStyle(fontSize: 18)),
               SizedBox(height: 20),

@@ -200,7 +200,7 @@ class _BusRouteMapPageState extends State<BusRouteMapPage> with SingleTickerProv
             left: 10,
             child: FloatingActionButton(
               onPressed: () {
-                  FluroRouterConfig.navigateToPage(context, "/findway", slideFromRight: false);
+                  FluroRouterConfig.navigateToPage(context, "/findWay", slideFromRight: false);
               },
               backgroundColor: Colors.white,
               elevation: 3,
@@ -604,16 +604,16 @@ class Trip {
 
   Map<String, dynamic> toJson() {
     return {
-      'customerId': customerId,
-      'startLocation': startLocation,
-      'endLocation': endLocation,
-      'startTime': startTime.toIso8601String(),
-      'endTime': endTime?.toIso8601String(),
-      'routeNumber': routeNumber,
-      'cost': cost,
-      'durationMinutes': durationMinutes,
-      'walkingDistance': walkingDistance,
-      'busDistance': busDistance,
+      'CustomerId': customerId,
+      'StartLocation': startLocation,
+      'EndLocation': endLocation,
+      'StartTime': startTime.toIso8601String(),
+      'EndTime': endTime?.toIso8601String(),
+      'RouteNumber': routeNumber,
+      'Cost': cost,
+      'DurationMinutes': durationMinutes,
+      'WalkingDistance': walkingDistance,
+      'BusDistance': busDistance,
     };
   }
 }

@@ -260,7 +260,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             }
                           },
 
-                          child: const Text('Sign in'),
+                          child: const Text('Sign up'),
                         ),
                       ),
                       const SizedBox(height: 30.0),
